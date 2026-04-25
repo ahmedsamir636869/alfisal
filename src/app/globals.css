@@ -1,0 +1,302 @@
+@import "tailwindcss";
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Alfisal — Editorial Architectural design system
+   Cool steel-blue palette: white surfaces + deep navy ink + mid-steel accent.
+   Brand hex: #ffffff · #324259 · #84a3c8 · #2b3747
+   OKLCH values calculated precisely from brand hex (hue ≈ 260°, blue-steel family).
+   ────────────────────────────────────────────────────────────────────────── */
+
+@theme inline {
+  /* ── Surfaces (clean white / blue-steel family) ──────────────────── */
+  --color-bone:            oklch(1      0      0);      /* #ffffff — main bg */
+  --color-parchment:       oklch(0.975  0.010  260);    /* near-white, blue tint */
+  --color-linen:           oklch(0.950  0.015  260);    /* light steel wash */
+  --color-sand:            oklch(0.915  0.020  260);    /* light blue-gray */
+  --color-stone:           oklch(0.878  0.022  260);    /* medium surface */
+  --color-hairline:        oklch(0.858  0.022  260);    /* border / rule */
+
+  /* ── Ink (steel-blue family, exact #324259 as primary) ───────────── */
+  --color-ink:             oklch(0.397  0.047  260);    /* #324259 — headline ink */
+  --color-ink-soft:        oklch(0.468  0.045  260);    /* lighter body ink */
+  --color-graphite:        oklch(0.353  0.033  254);    /* #2b3747 — deepest dark */
+  --color-slate:           oklch(0.535  0.042  260);    /* mid steel */
+  --color-muted:           oklch(0.598  0.035  260);    /* captions / meta text */
+
+  /* ── Accent: exact #84a3c8 steel blue ───────────────────────────── */
+  --color-saffron:         oklch(0.724  0.060  260);    /* #84a3c8 — primary accent */
+  --color-saffron-deep:    oklch(0.420  0.065  260);    /* dark accent — 4.5:1 on #fff */
+  --color-saffron-soft:    oklch(0.935  0.020  260);    /* very light accent wash */
+
+  /* ── Supporting: deep navy (same family, #2b3747) ────────────────── */
+  --color-blueprint:       oklch(0.353  0.033  254);    /* #2b3747 */
+
+  /* ── State ───────────────────────────────────────────────────────── */
+  --color-success:         oklch(0.62   0.12   150);
+  --color-danger:          oklch(0.55   0.20   27);
+
+  /* ── Legacy Material tokens kept for admin surfaces ──────────────── */
+  --color-primary:          oklch(0.397  0.047  260);   /* #324259 */
+  --color-on-primary:       oklch(1      0      0);     /* #ffffff */
+  --color-secondary:        oklch(0.420  0.065  260);   /* saffron-deep */
+  --color-on-secondary:     oklch(1      0      0);
+  --color-background:       oklch(1      0      0);
+  --color-on-background:    oklch(0.397  0.047  260);
+  --color-surface:          oklch(1      0      0);
+  --color-on-surface:       oklch(0.397  0.047  260);
+  --color-on-surface-variant: oklch(0.535 0.042  260);
+  --color-outline:          oklch(0.598  0.035  260);
+  --color-outline-variant:  oklch(0.858  0.022  260);
+  --color-surface-variant:  oklch(0.915  0.020  260);
+  --color-surface-container-lowest: oklch(1 0 0);
+  --color-surface-container-low:    oklch(0.975 0.010 260);
+  --color-surface-container:        oklch(0.950 0.015 260);
+  --color-surface-container-high:   oklch(0.915 0.020 260);
+  --color-surface-container-highest: oklch(0.878 0.022 260);
+  --color-secondary-container: oklch(0.935 0.020 260);
+
+  /* ── Typography ──────────────────────────────────────────────────── */
+  --font-display: var(--font-fraunces), 'Fraunces', 'Times New Roman', serif;
+  --font-body:    var(--font-inter),    'Inter',   system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, Consolas, monospace;
+  --font-headline: var(--font-fraunces), 'Fraunces', serif;
+  --font-label:   var(--font-inter), 'Inter', sans-serif;
+
+  /* Arabic fallbacks (loaded by next/font in layout, applied via [dir=rtl] below) */
+  --font-display-ar: var(--font-amiri), 'Amiri', 'Times New Roman', serif;
+  --font-body-ar:    var(--font-noto-kufi-arabic), 'Noto Kufi Arabic', system-ui, sans-serif;
+
+  /* ── Easing tokens ───────────────────────────────────────────────── */
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-expo:  cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Brand hex overrides — lock exact values regardless of OKLCH rounding ─ */
+:root {
+  --color-bone:       #ffffff;
+  --color-ink:        #324259;
+  --color-graphite:   #2b3747;
+  --color-blueprint:  #2b3747;
+  --color-saffron:    #84a3c8;
+  /* Derived from brand palette — kept as OKLCH for flexibility */
+  --color-parchment:  #f5f8fb;
+  --color-linen:      #e8f0f7;
+  --color-sand:       #d8e6f0;
+  --color-stone:      #c8d9e8;
+  --color-hairline:   #c2d4e4;
+  --color-ink-soft:   #4a6278;
+  --color-slate:      #5e7d94;
+  --color-muted:      #6d8fa8;
+  --color-saffron-deep:  #2e5c7a;
+  --color-saffron-soft:  #deeaf5;
+
+  /* ── Admin dark-shell palette (steel-navy family) ─────────────────── */
+  --admin-bg:           #141f2d;   /* darkest shell */
+  --admin-surface:      #1e2d3e;   /* sidebar / panels */
+  --admin-surface-card: #253548;   /* elevated card surface */
+  --admin-text:         #ffffff;
+  --admin-text-soft:    oklch(0.72 0.038 260);  /* nav labels, sub-headings */
+  --admin-text-muted:   oklch(0.62 0.035 260);  /* section labels, hints */
+  --admin-text-dim:     oklch(0.50 0.028 260);  /* key slugs, counts */
+  --admin-text-deep:    oklch(0.43 0.025 260);  /* placeholders */
+  --admin-accent:       #84a3c8;   /* = --color-saffron */
+  --admin-accent-dark:  #2e5c7a;   /* = --color-saffron-deep */
+  --admin-border:       rgba(132, 163, 200, 0.12);
+}
+
+/* ── Base ────────────────────────────────────────────────────────────── */
+html {
+  color-scheme: light;
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-bone);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 100dvh;
+}
+
+/* Remove 300ms tap delay on all interactive elements */
+a, button, input, select, textarea, [role="button"] {
+  touch-action: manipulation;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+.font-display  { font-family: var(--font-display); }
+.font-body     { font-family: var(--font-body); }
+.font-mono     { font-family: var(--font-mono); }
+.tabular-nums  { font-variant-numeric: tabular-nums; }
+
+/* Fraunces variable axes */
+.font-display {
+  font-optical-sizing: auto;
+  font-variation-settings: "SOFT" 50, "WONK" 0;
+}
+.font-display-display { font-variation-settings: "SOFT" 100, "WONK" 1, "opsz" 144; }
+
+/* Editorial headlines use .font-display explicitly. The admin panel keeps Inter. */
+.font-display {
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+::selection {
+  background: var(--color-saffron-soft);
+  color: var(--color-ink);
+}
+
+/* Material Symbols (admin + legacy) */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+}
+
+/* ── Keyframes ───────────────────────────────────────────────────────── */
+@keyframes subtle-zoom {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.06); }
+}
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translate3d(0, 16px, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+@keyframes stroke-in {
+  from { transform: scaleX(0); transform-origin: left; }
+  to   { transform: scaleX(1); transform-origin: left; }
+}
+
+.animate-fade-in-up { animation: fade-in-up 900ms var(--ease-out-expo) both; }
+.animate-fade-in    { animation: fade-in 700ms var(--ease-out-quint) both; }
+.animate-marquee    { animation: marquee 60s linear infinite; }
+.animate-stroke-in  { animation: stroke-in 900ms var(--ease-out-quint) both; }
+
+/* Accessible motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Editorial utilities ─────────────────────────────────────────────── */
+.hairline {
+  background: linear-gradient(to right, transparent, var(--color-hairline) 10%, var(--color-hairline) 90%, transparent);
+}
+.section-rule {
+  height: 1px;
+  background: color-mix(in oklab, var(--color-ink) 12%, transparent);
+}
+.tick-row::before {
+  content: "";
+  display: inline-block;
+  width: 28px;
+  height: 1px;
+  background: var(--color-ink);
+  margin-right: 16px;
+  vertical-align: middle;
+}
+
+/* Focus ring */
+:where(a, button, input, textarea, [role="button"]):focus-visible {
+  outline: 2px solid var(--color-saffron-deep);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* content-visibility for off-screen list items (rendering-content-visibility) */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 600px;
+}
+
+/* ── RTL / Arabic mode ──────────────────────────────────────────────── */
+html[dir="rtl"] body {
+  font-family: var(--font-body-ar);
+  font-feature-settings: normal;
+  letter-spacing: 0;
+}
+
+html[dir="rtl"] .font-display {
+  font-family: var(--font-display-ar);
+  font-variation-settings: normal;
+  letter-spacing: -0.005em; /* Arabic doesn't need aggressive negative tracking */
+}
+
+html[dir="rtl"] .font-body {
+  font-family: var(--font-body-ar);
+}
+
+html[dir="rtl"] .font-mono {
+  /* keep the monospace face for codes/numbers in Arabic admin too */
+  font-family: var(--font-mono);
+}
+
+/* Arabic numerals stay tabular for the editorial stat ribbons */
+html[dir="rtl"] .tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Stroke-in for nav underlines should originate from the start edge in either direction */
+@keyframes stroke-in-rtl {
+  from { transform: scaleX(0); transform-origin: right; }
+  to   { transform: scaleX(1); transform-origin: right; }
+}
+html[dir="rtl"] .animate-stroke-in {
+  animation-name: stroke-in-rtl;
+}
+
+/* Marquee should travel right-to-left in RTL */
+html[dir="rtl"] .animate-marquee {
+  animation-direction: reverse;
+}
+
+/* Scrollbar mirrors naturally; tick row arrow flips */
+html[dir="rtl"] .tick-row::before {
+  margin-right: 0;
+  margin-left: 16px;
+}
+
+/* Scrollbar on brand surfaces (subtle, hide on small touch screens) */
+@media (pointer: fine) {
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb {
+    background: color-mix(in oklab, var(--color-ink) 25%, transparent);
+    border-radius: 99px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in oklab, var(--color-ink) 45%, transparent);
+  }
+}
+
+/* ── Mobile-specific optimizations ───────────────────────────────────── */
+@media (max-width: 767px) {
+  /* Ensure safe-area insets for notch/home-indicator devices */
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Prevent horizontal overflow from any element */
+  main, section, footer {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+}
