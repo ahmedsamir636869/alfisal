@@ -31,6 +31,12 @@ export default function SubmissionsPage() {
   const [selected, setSelected] = useState<Submission | null>(null);
   const [filter, setFilter] = useState<StatusType | "all">("all");
 
+  const [notifyEmail, setNotifyEmail] = useState("");
+  const [autoSend, setAutoSend] = useState(false);
+  const [settingsLoading, setSettingsLoading] = useState(true);
+  const [settingsSaving, setSettingsSaving] = useState(false);
+  const [settingsSaved, setSettingsSaved] = useState(false);
+
   const load = useCallback(async () => {
     setLoading(true);
     const supabase = createClient();
@@ -42,7 +48,43 @@ export default function SubmissionsPage() {
     setLoading(false);
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  const loadSettings = useCallback(async () => {
+    setSettingsLoading(true);
+    const supabase = createClient();
+    const { data } = await supabase
+      .from("site_content")
+      .select("key, value")
+      .eq("section", "contact")
+      .in("key", ["notify_email", "auto_send_email"]);
+    const map: Record<string, string> = {};
+    for (const row of data || []) map[row.key] = row.value;
+    setNotifyEmail(map.notify_email || "");
+    setAutoSend(map.auto_send_email?.toLowerCase() === "true");
+    setSettingsLoading(false);
+  }, []);
+
+  async function saveSettings() {
+    setSettingsSaving(true);
+    setSettingsSaved(false);
+    const supabase = createClient();
+    await Promise.all([
+      supabase
+        .from("site_content")
+        .update({ value: notifyEmail.trim(), updated_at: new Date().toISOString() })
+        .eq("section", "contact")
+        .eq("key", "notify_email"),
+      supabase
+        .from("site_content")
+        .update({ value: autoSend ? "true" : "false", updated_at: new Date().toISOString() })
+        .eq("section", "contact")
+        .eq("key", "auto_send_email"),
+    ]);
+    setSettingsSaving(false);
+    setSettingsSaved(true);
+    setTimeout(() => setSettingsSaved(false), 3000);
+  }
+
+  useEffect(() => { load(); loadSettings(); }, [load, loadSettings]);
 
   async function updateStatus(id: string, status: string) {
     const supabase = createClient();
@@ -94,9 +136,82 @@ export default function SubmissionsPage() {
         </h1>
         <p className="text-[var(--admin-text-soft)] text-sm mt-3 max-w-[60ch] leading-relaxed">
           All contact form submissions are saved here. Mark them as read,
-          replied, or archived. Email auto-forwarding is configured in the
-          Contact section settings.
+          replied, or archived. Configure auto-forwarding below to receive
+          an email whenever a new enquiry comes in.
         </p>
+      </div>
+
+      {/* ── Email notification settings ──────────────────────────── */}
+      <div className="mb-10 border border-[var(--admin-border)] bg-[var(--admin-surface-card)] p-6">
+        <div className="text-[10px] font-mono uppercase tracking-[0.25em] text-[var(--admin-text-muted)] mb-4 flex items-center gap-2">
+          <span className="material-symbols-outlined text-[16px] text-[var(--admin-accent)]">
+            forward_to_inbox
+          </span>
+          Auto-forward settings
+        </div>
+
+        {settingsLoading ? (
+          <div className="text-[var(--admin-text-dim)] text-sm font-mono">Loading...</div>
+        ) : (
+          <div className="space-y-5">
+            {/* Toggle */}
+            <label className="flex items-center gap-3 cursor-pointer group">
+              <button
+                type="button"
+                role="switch"
+                aria-checked={autoSend}
+                onClick={() => setAutoSend(!autoSend)}
+                className={`relative w-11 h-6 rounded-full transition-colors ${
+                  autoSend
+                    ? "bg-[var(--admin-accent)]"
+                    : "bg-white/15"
+                }`}
+              >
+                <span
+                  className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
+                    autoSend ? "translate-x-5" : "translate-x-0"
+                  }`}
+                />
+              </button>
+              <span className="text-white text-sm">
+                Auto-send email when a new submission arrives
+              </span>
+            </label>
+
+            {/* Email input */}
+            <div>
+              <label className="text-[10px] font-mono uppercase tracking-[0.25em] text-[var(--admin-text-muted)] mb-2 block">
+                Forward to email
+              </label>
+              <div className="flex gap-3">
+                <input
+                  type="email"
+                  value={notifyEmail}
+                  onChange={(e) => setNotifyEmail(e.target.value)}
+                  placeholder="e.g. info@alfisalcon.com"
+                  className="flex-1 bg-[var(--admin-bg)] border border-[var(--admin-border)] text-white text-sm px-4 py-2.5 placeholder:text-[var(--admin-text-dim)] focus:outline-none focus:border-[var(--admin-accent)] transition-colors"
+                />
+                <button
+                  onClick={saveSettings}
+                  disabled={settingsSaving}
+                  className="px-5 py-2.5 text-[11px] font-mono uppercase tracking-[0.2em] bg-[var(--admin-accent)] text-[var(--admin-bg)] hover:bg-[var(--admin-accent-dark)] hover:text-white transition-colors disabled:opacity-50 cursor-pointer"
+                >
+                  {settingsSaving ? "Saving..." : settingsSaved ? "Saved ✓" : "Save"}
+                </button>
+              </div>
+              {autoSend && !notifyEmail.trim() && (
+                <p className="text-amber-400 text-[11px] mt-2">
+                  Enter an email address to receive auto-notifications.
+                </p>
+              )}
+              {!autoSend && (
+                <p className="text-[var(--admin-text-dim)] text-[11px] mt-2">
+                  Auto-forwarding is off. Submissions are still saved here.
+                </p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Filter tabs */}
