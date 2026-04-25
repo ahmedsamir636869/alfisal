@@ -8,7 +8,7 @@ import { LOCALES, type Locale } from "@/lib/i18n";
 interface LocaleSwitcherProps {
   active: Locale;
   currentPath?: string;
-  variant?: "nav" | "mobile" | "inline";
+  variant?: "nav" | "mobile" | "header-mobile" | "inline";
 }
 
 export default function LocaleSwitcher({
@@ -30,6 +30,23 @@ export default function LocaleSwitcher({
   // Display label — keep "EN" Latin-bold and "ع" in the brand serif so the
   // toggle reads as a visual seal rather than competing with the wordmark.
   const labelFor = (l: Locale) => (l === "ar" ? "ع" : "EN");
+
+  if (variant === "header-mobile") {
+    const next: Locale = active === "ar" ? "en" : "ar";
+    return (
+      <button
+        type="button"
+        onClick={() => handleSelect(next)}
+        disabled={pending}
+        aria-label={next === "ar" ? "التبديل إلى العربية" : "Switch to English"}
+        className={`md:hidden h-9 min-w-[38px] px-2 inline-flex items-center justify-center border border-[var(--color-hairline)] text-[var(--color-ink-soft)] transition-colors active:bg-[var(--color-parchment)] ${
+          next === "ar" ? "font-display text-[17px] leading-none" : "font-mono text-[11px] tracking-[0.12em] uppercase"
+        }`}
+      >
+        {labelFor(next)}
+      </button>
+    );
+  }
 
   if (variant === "mobile") {
     return (

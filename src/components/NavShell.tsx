@@ -141,16 +141,23 @@ export default function NavShell({
               </Link>
             </div>
 
-            <button
-              type="button"
-              onClick={() => setOpen(true)}
-              className="md:hidden h-11 w-11 flex items-center justify-center text-[var(--color-ink)]"
-              aria-label="Open menu"
-              aria-expanded={open}
-              aria-controls="mobile-menu"
-            >
-              <span className="material-symbols-outlined text-[26px]">menu</span>
-            </button>
+            <div className="md:hidden flex items-center gap-1.5">
+              <LocaleSwitcher
+                active={activeLocale}
+                currentPath={activeRoute}
+                variant="header-mobile"
+              />
+              <button
+                type="button"
+                onClick={() => setOpen(true)}
+                className="h-11 w-11 flex items-center justify-center text-[var(--color-ink)]"
+                aria-label="Open menu"
+                aria-expanded={open}
+                aria-controls="mobile-menu"
+              >
+                <span className="material-symbols-outlined text-[26px]">menu</span>
+              </button>
+            </div>
           </div>
         </div>
       </nav>
