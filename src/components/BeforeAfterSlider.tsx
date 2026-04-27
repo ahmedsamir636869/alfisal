@@ -51,27 +51,9 @@ export default function BeforeAfterSlider({
     };
   }, [dragging, updatePosition]);
 
-  /* ── Fallback: no video URL set ── */
-  if (!hasVideo) {
-    return (
-      <div className="relative aspect-[3/4] sm:aspect-[4/5] w-full overflow-hidden rounded-2xl">
-        <Image
-          src={fallbackSrc || beforeSrc}
-          alt={fallbackAlt || beforeAlt}
-          fill
-          priority
-          sizes="(min-width: 1024px) 40vw, 100vw"
-          className="object-cover"
-        />
-        <div
-          aria-hidden
-          className="absolute inset-0 ring-1 ring-inset ring-white/10 rounded-2xl pointer-events-none"
-        />
-      </div>
-    );
-  }
+  const afterImgSrc = fallbackSrc || beforeSrc;
+  const afterImgAlt = fallbackAlt || beforeAlt;
 
-  /* ── Slider ── */
   return (
     <div
       ref={containerRef}
@@ -91,17 +73,28 @@ export default function BeforeAfterSlider({
         if (e.key === "ArrowRight") setPosition((p) => Math.min(100, p + 2));
       }}
     >
-      {/* ── After layer: video (behind, full width) ── */}
-      <video
-        src={afterVideoSrc}
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="absolute inset-0 w-full h-full object-cover"
-      />
+      {/* ── After layer (behind, full width) ── */}
+      {hasVideo ? (
+        <video
+          src={afterVideoSrc}
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+      ) : (
+        <Image
+          src={afterImgSrc}
+          alt={afterImgAlt}
+          fill
+          priority
+          sizes="(min-width: 1024px) 40vw, 100vw"
+          className="object-cover"
+        />
+      )}
 
-      {/* ── Before layer: photo (clipped) ── */}
+      {/* ── Before layer (clipped by slider position) ── */}
       <div
         className="absolute inset-0 overflow-hidden"
         style={{ clipPath: `inset(0 ${100 - position}% 0 0)` }}
@@ -112,7 +105,7 @@ export default function BeforeAfterSlider({
           fill
           priority
           sizes="(min-width: 1024px) 40vw, 100vw"
-          className="object-cover"
+          className={`object-cover ${hasVideo ? "" : "grayscale contrast-[1.1]"}`}
         />
       </div>
 
@@ -124,7 +117,7 @@ export default function BeforeAfterSlider({
         <div className="w-[3px] h-full bg-white shadow-[0_0_12px_rgba(0,0,0,0.35)]" />
       </div>
 
-      {/* ── Center handle: circle with arrows ── */}
+      {/* ── Center handle ── */}
       <div
         className="absolute z-30 pointer-events-none"
         style={{
@@ -133,7 +126,7 @@ export default function BeforeAfterSlider({
           transform: "translate(-50%, -50%)",
         }}
       >
-        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white/95 backdrop-blur-sm shadow-[0_4px_24px_rgba(0,0,0,0.3)] flex items-center justify-center gap-0.5">
+        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white/95 backdrop-blur-sm shadow-[0_4px_24px_rgba(0,0,0,0.3)] flex items-center justify-center">
           <svg
             width="36"
             height="36"
@@ -141,7 +134,6 @@ export default function BeforeAfterSlider({
             fill="none"
             className="text-[var(--color-ink)]"
           >
-            {/* Left arrow */}
             <path
               d="M14 12L8 18L14 24"
               stroke="currentColor"
@@ -149,7 +141,6 @@ export default function BeforeAfterSlider({
               strokeLinecap="round"
               strokeLinejoin="round"
             />
-            {/* Right arrow */}
             <path
               d="M22 12L28 18L22 24"
               stroke="currentColor"
@@ -161,7 +152,7 @@ export default function BeforeAfterSlider({
         </div>
       </div>
 
-      {/* ── Bottom labels: pill badges ── */}
+      {/* ── Bottom labels ── */}
       <span
         className="absolute bottom-5 left-5 z-20 bg-[var(--color-saffron)] text-[var(--color-ink)] text-[11px] sm:text-xs font-bold tracking-[0.06em] uppercase px-4 sm:px-5 py-2 sm:py-2.5 rounded-full shadow-[0_2px_12px_rgba(0,0,0,0.25)] pointer-events-none"
         style={{ opacity: position > 8 ? 1 : 0, transition: "opacity 0.2s" }}
@@ -175,7 +166,7 @@ export default function BeforeAfterSlider({
         {afterLabel}
       </span>
 
-      {/* ── Rounded corner overlay ── */}
+      {/* ── Rounded corner ring ── */}
       <div
         aria-hidden
         className="absolute inset-0 ring-1 ring-inset ring-white/10 rounded-2xl pointer-events-none z-10"
