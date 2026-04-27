@@ -4,6 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { getContentServer, getImagesServer } from "@/lib/cms";
 import { getLocale } from "@/lib/i18n.server";
+import TypeWriter from "./TypeWriter";
 
 export default async function Hero() {
   const [cookieStore, locale] = await Promise.all([cookies(), getLocale()]);
@@ -34,17 +35,18 @@ export default async function Hero() {
             </span>
           </div>
 
-          <h1
+          <TypeWriter
             id="hero-heading"
+            as="h1"
             className="font-display font-display-display text-[clamp(2.5rem,8vw,8.25rem)] leading-[0.95] tracking-[-0.035em] text-[var(--color-ink)]"
-          >
-            {content.title_line1 || "Architecture"}
-            <br />
-            <span className="italic font-light">
-              {content.title_line2 || "of consequence"}
-            </span>
-            <span className="text-[var(--color-saffron-deep)]">.</span>
-          </h1>
+            lines={[
+              { text: content.title_line1 || "Architecture" },
+              { text: content.title_line2 || "of consequence", className: "italic font-light" },
+            ]}
+            suffix={<span className="text-[var(--color-saffron-deep)]">.</span>}
+            speed={60}
+            lineDelay={350}
+          />
 
           <p className="mt-6 sm:mt-10 max-w-[46ch] text-[var(--color-ink-soft)] leading-[1.7] text-base sm:text-[17px]">
             {content.lead ||
