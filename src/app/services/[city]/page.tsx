@@ -4,6 +4,7 @@ import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { getLocale } from "@/lib/i18n.server";
+import { getContentServer } from "@/lib/cms";
 import { CITIES, getCityBySlug, CITY_SLUGS } from "@/data/cities";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://alfisalcon.com";
@@ -91,10 +92,17 @@ export default async function CityServicePage({
 }: {
   params: Promise<{ city: string }>;
 }) {
-  const [{ city: slug }, locale] = await Promise.all([params, getLocale()]);
+  const [{ city: slug }, locale, cookieStore] = await Promise.all([
+    params,
+    getLocale(),
+    cookies(),
+  ]);
   const city = getCityBySlug(slug);
   if (!city) notFound();
   const isAr = locale === "ar";
+
+  const supabase = await createClient(cookieStore);
+  const ctaContent = await getContentServer(supabase, "cta_banner", locale);
 
   const cityName = isAr ? city.nameAr : city.name;
   const country  = isAr ? city.countryAr : city.country;
@@ -236,27 +244,30 @@ export default async function CityServicePage({
           <div className="col-span-12 md:col-span-3" />
           <div className="col-span-12 md:col-span-9">
             <p className="font-mono text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)] mb-6">
-              {isAr ? "ابدأ محادثة" : "Start a Conversation"}
-            </p>
-            <h2 className="font-display text-[clamp(2rem,5vw,4.5rem)] leading-[0.98] tracking-[-0.03em] text-[var(--color-ink)] mb-10">
               {isAr
                 ? `لديك مشروع في ${cityName}؟`
                 : `Have a project in ${cityName}?`}
+            </p>
+            <h2 className="font-display text-[clamp(2rem,5vw,4.5rem)] leading-[0.98] tracking-[-0.03em] text-[var(--color-ink)] mb-10">
+              {ctaContent.title || (isAr ? "هل أنت مستعدّ لبناء رؤيتك؟" : "Ready to construct your vision?")}
             </h2>
+            <p className="text-[var(--color-ink-soft)] leading-[1.8] max-w-[56ch] mb-10 text-base sm:text-lg">
+              {ctaContent.description}
+            </p>
             <div className="flex flex-wrap gap-4">
               <Link
                 href="/contact"
                 className="inline-flex items-center gap-3 bg-[var(--color-ink)] text-[var(--color-bone)] px-8 py-4 font-mono text-[11px] tracking-[0.18em] uppercase group hover:bg-[var(--color-saffron-deep)] transition-colors"
               >
-                <span>{isAr ? "تواصل معنا" : "Get in touch"}</span>
+                <span>{ctaContent.cta_primary || (isAr ? "ابدأ المحادثة" : "Start a conversation")}</span>
                 <span className="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
               </Link>
-              <Link
-                href="/projects"
+              <a
+                href={`tel:${ctaContent.phone || ""}`}
                 className="inline-flex items-center gap-3 border border-[var(--color-hairline)] text-[var(--color-ink)] px-8 py-4 font-mono text-[11px] tracking-[0.18em] uppercase group hover:border-[var(--color-ink)] transition-colors"
               >
-                {isAr ? "عرض المشاريع" : "View projects"}
-              </Link>
+                {ctaContent.cta_secondary || (isAr ? "اتّصل بالاستوديو" : "Call the studio")}
+              </a>
             </div>
           </div>
         </div>
