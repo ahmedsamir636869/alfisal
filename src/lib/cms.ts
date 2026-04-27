@@ -56,6 +56,9 @@ export const DEFAULT_CONTENT: Record<string, Record<string, ContentValue>> = {
                     type: "textarea", label: "Lead Paragraph" },
     cta_primary:  { en: "Browse the portfolio",            ar: "تصفّح أعمالنا",     type: "text", label: "Primary Button" },
     cta_secondary:{ en: "Read the studio",                 ar: "تعرّف على الاستوديو", type: "text", label: "Secondary Button" },
+    slider_before_label: { en: "Before",  ar: "قبل",  type: "text", label: "Slider — Before Label" },
+    slider_after_label:  { en: "After",   ar: "بعد",   type: "text", label: "Slider — After Label" },
+    slider_video_url:    { en: "",        ar: "",      type: "url",  label: "Slider — After Video URL (mp4)" },
     stat1_number: { en: "150",                             ar: "١٥٠",              type: "text", label: "Stat 01 — Number" },
     stat1_suffix: { en: "+",                               ar: "+",                type: "text", label: "Stat 01 — Suffix (e.g. +, %)" },
     stat1_label:  { en: "Landmark Projects",               ar: "مشروعاً مميّزاً",    type: "text", label: "Stat 01 — Label" },
@@ -284,6 +287,7 @@ export const DEFAULT_CONTENT: Record<string, Record<string, ContentValue>> = {
 export const DEFAULT_IMAGES: Record<string, Record<string, { url: string; alt: string; alt_ar?: string; label: string }>> = {
   hero: {
     background: { url: "/hero-bg.jpg", alt: "Modern glass and steel skyscraper", alt_ar: "ناطحة سحاب من الزجاج والفولاذ", label: "Hero Background Image" },
+    before_photo: { url: "/hero-bg.jpg", alt: "Before — construction site", alt_ar: "قبل — موقع البناء", label: "Slider — Before Photo" },
   },
   featured_projects: {
     project1_image: {
