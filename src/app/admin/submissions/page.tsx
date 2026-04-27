@@ -7,6 +7,7 @@ interface Submission {
   id: string;
   name: string;
   email: string;
+  phone: string | null;
   project_type: string | null;
   budget: string | null;
   message: string;
@@ -321,10 +322,19 @@ export default function SubmissionsPage() {
               </h2>
               <a
                 href={`mailto:${selected.email}`}
-                className="text-[var(--admin-accent)] text-sm hover:underline"
+                className="text-[var(--admin-accent)] text-sm hover:underline block"
               >
                 {selected.email}
               </a>
+              {selected.phone && (
+                <a
+                  href={`tel:${selected.phone}`}
+                  className="text-[var(--admin-text-soft)] text-sm hover:text-white transition-colors flex items-center gap-1.5 mt-1"
+                >
+                  <span className="material-symbols-outlined text-[15px]">call</span>
+                  {selected.phone}
+                </a>
+              )}
 
               <div className="mt-6 space-y-4">
                 {selected.interested_project && (

@@ -6,6 +6,7 @@ import { cookies } from "next/headers";
 interface ContactPayload {
   name: string;
   email: string;
+  phone?: string;
   projectType?: string;
   budget?: string;
   message: string;
@@ -21,6 +22,7 @@ export async function submitContact(payload: ContactPayload) {
     .insert({
       name: payload.name,
       email: payload.email,
+      phone: payload.phone || null,
       project_type: payload.projectType || null,
       budget: payload.budget || null,
       message: payload.message,

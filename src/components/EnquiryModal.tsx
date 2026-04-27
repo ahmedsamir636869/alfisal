@@ -101,6 +101,7 @@ export default function EnquiryModal({
       const result = await submitContact({
         name: form.name,
         email: form.email,
+        phone: form.phone || undefined,
         message: form.message,
         interestedProject: projectTitle,
       });
