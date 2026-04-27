@@ -12,6 +12,7 @@ interface Submission {
   message: string;
   status: string;
   notes: string | null;
+  interested_project: string | null;
   created_at: string;
 }
 
@@ -280,6 +281,14 @@ export default function SubmissionsPage() {
                 <div className="text-[var(--admin-text-muted)] text-sm truncate">
                   {s.email}
                 </div>
+                {s.interested_project && (
+                  <div className="flex items-center gap-1.5 mt-1.5">
+                    <span className="material-symbols-outlined text-[14px] text-[var(--admin-accent)]">apartment</span>
+                    <span className="text-[var(--admin-accent)] text-[11px] font-mono truncate">
+                      {s.interested_project}
+                    </span>
+                  </div>
+                )}
                 <p className="text-[var(--admin-text-dim)] text-sm mt-1 line-clamp-2">
                   {s.message}
                 </p>
@@ -318,6 +327,17 @@ export default function SubmissionsPage() {
               </a>
 
               <div className="mt-6 space-y-4">
+                {selected.interested_project && (
+                  <div>
+                    <div className="text-[10px] font-mono uppercase tracking-[0.25em] text-[var(--admin-text-muted)] mb-1">
+                      Interested in project
+                    </div>
+                    <div className="flex items-center gap-2 text-[var(--admin-accent)]">
+                      <span className="material-symbols-outlined text-[18px]">apartment</span>
+                      <span className="text-sm font-display">{selected.interested_project}</span>
+                    </div>
+                  </div>
+                )}
                 {selected.project_type && (
                   <InfoRow label="Project type" value={selected.project_type} />
                 )}

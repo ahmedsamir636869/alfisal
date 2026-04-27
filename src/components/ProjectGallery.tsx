@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import type { Locale } from "@/lib/i18n";
+import EnquiryModal from "./EnquiryModal";
 
 interface Project {
   title: string | null;
@@ -55,6 +56,7 @@ export default function ProjectGallery({ projects, locale = "en" }: ProjectGalle
 
   const [active, setActive] = useState<string>(allKey);
   const [view, setView] = useState<"spread" | "grid">("spread");
+  const [enquiryProject, setEnquiryProject] = useState<string | null>(null);
 
   const categories = useMemo(
     () => [allKey, ...Array.from(new Set(projects.map((p) => p.category).filter(Boolean) as string[]))],
@@ -197,10 +199,14 @@ export default function ProjectGallery({ projects, locale = "en" }: ProjectGalle
                       </p>
                     )}
 
-                    <span className="mt-5 sm:mt-7 inline-flex items-center gap-2 text-[11px] font-medium tracking-[0.14em] uppercase text-[var(--color-ink)] border-b border-[var(--color-ink)] pb-1 min-h-[44px]">
+                    <button
+                      type="button"
+                      onClick={() => setEnquiryProject(project.title || "")}
+                      className="mt-5 sm:mt-7 inline-flex items-center gap-2 text-[11px] font-medium tracking-[0.14em] uppercase text-[var(--color-ink)] border-b border-[var(--color-ink)] pb-1 min-h-[44px] cursor-pointer hover:text-[var(--color-saffron-deep)] hover:border-[var(--color-saffron-deep)] transition-colors"
+                    >
                       {t.viewStudy}
                       <span aria-hidden className={`material-symbols-outlined text-[14px] ${locale === "ar" ? "rotate-180" : ""}`}>arrow_forward</span>
-                    </span>
+                    </button>
                   </div>
                 </article>
               );
@@ -236,11 +242,26 @@ export default function ProjectGallery({ projects, locale = "en" }: ProjectGalle
                   {project.title}
                 </h3>
                 <p className="mt-1 sm:mt-1.5 text-[var(--color-muted)] text-sm">{project.location}</p>
+                <button
+                  type="button"
+                  onClick={() => setEnquiryProject(project.title || "")}
+                  className="mt-3 inline-flex items-center gap-1.5 text-[11px] font-medium tracking-[0.14em] uppercase text-[var(--color-ink)] border-b border-[var(--color-ink)] pb-0.5 min-h-[44px] cursor-pointer hover:text-[var(--color-saffron-deep)] hover:border-[var(--color-saffron-deep)] transition-colors"
+                >
+                  {t.viewStudy}
+                  <span aria-hidden className={`material-symbols-outlined text-[14px] ${locale === "ar" ? "rotate-180" : ""}`}>arrow_forward</span>
+                </button>
               </article>
             ))}
           </div>
         )}
       </div>
+
+      <EnquiryModal
+        open={enquiryProject !== null}
+        onClose={() => setEnquiryProject(null)}
+        projectTitle={enquiryProject || ""}
+        locale={locale}
+      />
     </div>
   );
 }

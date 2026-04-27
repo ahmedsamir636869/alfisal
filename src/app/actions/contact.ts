@@ -9,6 +9,7 @@ interface ContactPayload {
   projectType?: string;
   budget?: string;
   message: string;
+  interestedProject?: string;
 }
 
 export async function submitContact(payload: ContactPayload) {
@@ -23,6 +24,7 @@ export async function submitContact(payload: ContactPayload) {
       project_type: payload.projectType || null,
       budget: payload.budget || null,
       message: payload.message,
+      interested_project: payload.interestedProject || null,
       status: "new",
     });
 
