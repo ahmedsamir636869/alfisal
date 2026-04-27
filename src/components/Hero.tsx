@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { getContentServer, getImagesServer } from "@/lib/cms";
 import { getLocale } from "@/lib/i18n.server";
 import TypeWriter from "./TypeWriter";
-import BeforeAfterSlider from "./BeforeAfterSlider";
+import HeroVideo from "./HeroVideo";
 
 export default async function Hero() {
   const [cookieStore, locale] = await Promise.all([cookies(), getLocale()]);
@@ -71,17 +71,13 @@ export default async function Hero() {
         </div>
 
         <div className="col-span-12 lg:col-span-5 relative flex flex-col justify-end pb-6 lg:pb-20 pt-0 lg:pt-24">
-          <BeforeAfterSlider
-            beforeSrc={images.before_photo?.url || images.background?.url || "/hero-bg.jpg"}
-            beforeAlt={images.before_photo?.alt || "Before"}
-            afterVideoSrc={content.slider_video_url || ""}
-            beforeLabel={content.slider_before_label || (locale === "ar" ? "قبل" : "Before")}
-            afterLabel={content.slider_after_label || (locale === "ar" ? "بعد" : "After")}
+          <HeroVideo
+            src={content.slider_video_url || ""}
             fallbackSrc={images.background?.url || "/hero-bg.jpg"}
             fallbackAlt={images.background?.alt || "A landmark building by Alfisal"}
           />
           <figcaption className="mt-3 sm:mt-4 font-mono text-[10px] tracking-[0.15em] uppercase text-[var(--color-muted)]">
-            Fig. 01 — {images.before_photo?.alt || images.background?.alt || "Zenith Tower, Dubai"}
+            Fig. 01 — {images.background?.alt || "Zenith Tower, Dubai"}
           </figcaption>
         </div>
       </div>
