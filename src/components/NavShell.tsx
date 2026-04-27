@@ -13,6 +13,7 @@ interface NavShellProps {
   brandName: string;
   logoUrl: string;
   logoAlt: string;
+  logoSize?: number;
   links: NavLink[];
   ctaLabel: string;
   ctaHref: string;
@@ -24,6 +25,7 @@ export default function NavShell({
   brandName,
   logoUrl,
   logoAlt,
+  logoSize = 32,
   links,
   ctaLabel,
   ctaHref,
@@ -88,7 +90,10 @@ export default function NavShell({
               className="flex items-center gap-3 group"
               aria-label={`${brandName} — home`}
             >
-              <div className="relative h-8 w-8 overflow-hidden">
+              <div
+                className="relative overflow-hidden"
+                style={{ height: logoSize, width: logoSize }}
+              >
                 <Image
                   src={logoUrl}
                   alt={logoAlt}

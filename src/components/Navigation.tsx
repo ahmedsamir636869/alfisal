@@ -27,11 +27,14 @@ export default async function Navigation() {
     { label: content.link5_text || "Contact",  href: content.link5_url || "/contact"  },
   ];
 
+  const logoSize = parseInt(content.logo_size, 10) || 32;
+
   return (
     <NavShell
       brandName={content.brand_name || "Alfisal"}
       logoUrl={images.logo?.url || "/logo.png"}
       logoAlt={images.logo?.alt || "Alfisal"}
+      logoSize={logoSize}
       links={links}
       ctaLabel={content.cta_text || "Start a project"}
       ctaHref={content.cta_url || "/contact"}

@@ -131,6 +131,7 @@ export const DEFAULT_CONTENT: Record<string, Record<string, ContentValue>> = {
     link5_url:  { en: "/contact",  ar: "/contact", type: "text", label: "Link 5 URL" },
     cta_text:   { en: "Start a project", ar: "ابدأ مشروعاً", type: "text", label: "Nav CTA Label" },
     cta_url:    { en: "/contact",        ar: "/contact",   type: "text", label: "Nav CTA URL"   },
+    logo_size:  { en: "32",             ar: "32",         type: "text", label: "Logo Size (px)" },
   },
 
   about: {
