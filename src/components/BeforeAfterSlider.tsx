@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import {
   ReactCompareSlider,
   ReactCompareSliderImage,
@@ -14,6 +15,30 @@ interface BeforeAfterSliderProps {
   afterLabel?: string;
   fallbackSrc?: string;
   fallbackAlt?: string;
+}
+
+function AutoPlayVideo({ src }: { src: string }) {
+  const ref = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const v = ref.current;
+    if (!v) return;
+    v.muted = true;
+    v.play().catch(() => {});
+  }, []);
+
+  return (
+    <video
+      ref={ref}
+      src={src}
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="auto"
+      style={{ objectFit: "cover", width: "100%", height: "100%" }}
+    />
+  );
 }
 
 export default function BeforeAfterSlider({
@@ -48,14 +73,7 @@ export default function BeforeAfterSlider({
           }
           itemTwo={
             hasVideo ? (
-              <video
-                src={afterVideoSrc}
-                autoPlay
-                muted
-                loop
-                playsInline
-                style={{ objectFit: "cover", width: "100%", height: "100%" }}
-              />
+              <AutoPlayVideo src={afterVideoSrc} />
             ) : (
               <ReactCompareSliderImage
                 src={fallbackSrc || beforeSrc}
