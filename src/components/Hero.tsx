@@ -1,10 +1,10 @@
+import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { getContentServer, getImagesServer } from "@/lib/cms";
 import { getLocale } from "@/lib/i18n.server";
 import TypeWriter from "./TypeWriter";
-import HeroVideo from "./HeroVideo";
 
 export default async function Hero() {
   const [cookieStore, locale] = await Promise.all([cookies(), getLocale()]);
@@ -71,11 +71,20 @@ export default async function Hero() {
         </div>
 
         <div className="col-span-12 lg:col-span-5 relative flex flex-col justify-end pb-6 lg:pb-20 pt-0 lg:pt-24">
-          <HeroVideo
-            src={content.slider_video_url || ""}
-            fallbackSrc={images.background?.url || "/hero-bg.jpg"}
-            fallbackAlt={images.background?.alt || "A landmark building by Alfisal"}
-          />
+          <div className="relative aspect-[3/4] sm:aspect-[4/5] w-full overflow-hidden">
+            <Image
+              src={images.background?.url || "/hero-bg.jpg"}
+              alt={images.background?.alt || "A landmark building by Alfisal"}
+              fill
+              priority
+              sizes="(min-width: 1024px) 40vw, 100vw"
+              className="object-cover grayscale-[40%] contrast-[1.05] animate-[subtle-zoom_22s_ease-in-out_infinite]"
+            />
+            <div
+              aria-hidden
+              className="absolute inset-0 ring-1 ring-inset ring-[var(--color-ink)]/10 pointer-events-none"
+            />
+          </div>
           <figcaption className="mt-3 sm:mt-4 font-mono text-[10px] tracking-[0.15em] uppercase text-[var(--color-muted)]">
             Fig. 01 — {images.background?.alt || "Zenith Tower, Dubai"}
           </figcaption>

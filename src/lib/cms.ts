@@ -9,7 +9,7 @@ export interface ContentBlock {
   key: string;
   value: string;
   value_ar: string | null;
-  type: "text" | "textarea" | "url" | "email" | "phone" | "video";
+  type: "text" | "textarea" | "url" | "email" | "phone";
   label: string;
   created_at: string;
   updated_at: string;
@@ -44,8 +44,6 @@ export interface ContentValue {
   label: string;
 }
 
-export type ContentFieldType = ContentBlock["type"];
-
 // ── Section Definitions (default content) ──────────────────────────────────────
 
 export const DEFAULT_CONTENT: Record<string, Record<string, ContentValue>> = {
@@ -58,9 +56,6 @@ export const DEFAULT_CONTENT: Record<string, Record<string, ContentValue>> = {
                     type: "textarea", label: "Lead Paragraph" },
     cta_primary:  { en: "Browse the portfolio",            ar: "تصفّح أعمالنا",     type: "text", label: "Primary Button" },
     cta_secondary:{ en: "Read the studio",                 ar: "تعرّف على الاستوديو", type: "text", label: "Secondary Button" },
-    slider_before_label: { en: "Before",  ar: "قبل",  type: "text", label: "Slider — Before Label" },
-    slider_after_label:  { en: "After",   ar: "بعد",   type: "text", label: "Slider — After Label" },
-    slider_video_url:    { en: "",        ar: "",      type: "video", label: "Slider — After Video (upload mp4)" },
     stat1_number: { en: "150",                             ar: "١٥٠",              type: "text", label: "Stat 01 — Number" },
     stat1_suffix: { en: "+",                               ar: "+",                type: "text", label: "Stat 01 — Suffix (e.g. +, %)" },
     stat1_label:  { en: "Landmark Projects",               ar: "مشروعاً مميّزاً",    type: "text", label: "Stat 01 — Label" },
@@ -289,7 +284,6 @@ export const DEFAULT_CONTENT: Record<string, Record<string, ContentValue>> = {
 export const DEFAULT_IMAGES: Record<string, Record<string, { url: string; alt: string; alt_ar?: string; label: string }>> = {
   hero: {
     background: { url: "/hero-bg.jpg", alt: "Modern glass and steel skyscraper", alt_ar: "ناطحة سحاب من الزجاج والفولاذ", label: "Hero Background Image" },
-    before_photo: { url: "/hero-bg.jpg", alt: "Before — construction site", alt_ar: "قبل — موقع البناء", label: "Slider — Before Photo" },
   },
   featured_projects: {
     project1_image: {
@@ -573,24 +567,6 @@ export async function uploadImage(file: File, section: string): Promise<string> 
   const { error } = await supabase.storage
     .from("site-images")
     .upload(fileName, file, { upsert: true });
-
-  if (error) throw error;
-
-  const { data: urlData } = supabase.storage
-    .from("site-images")
-    .getPublicUrl(fileName);
-
-  return urlData.publicUrl;
-}
-
-export async function uploadVideo(file: File, section: string): Promise<string> {
-  const supabase = createBrowserClient();
-  const ext = file.name.split(".").pop() || "mp4";
-  const fileName = `${section}/video-${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
-
-  const { error } = await supabase.storage
-    .from("site-images")
-    .upload(fileName, file, { upsert: true, contentType: file.type });
 
   if (error) throw error;
 

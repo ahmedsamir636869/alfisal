@@ -8,7 +8,6 @@ import {
   upsertContent,
   upsertImage,
   uploadImage,
-  uploadVideo,
 } from "@/lib/cms";
 import type {
   LocalisedContentMap,
@@ -44,7 +43,6 @@ export default function SectionEditor({
   const [savedKeys, setSavedKeys] = useState<Set<string>>(new Set());
   const [uploading, setUploading] = useState<Record<string, boolean>>({});
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
-  const videoInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const sectionContentDefs = DEFAULT_CONTENT[section] || {};
   const sectionImageDefs = DEFAULT_IMAGES[section] || {};
@@ -85,19 +83,6 @@ export default function SectionEditor({
       console.error("Failed to upload:", err);
     }
     setUploading((prev) => ({ ...prev, [key]: false }));
-  }
-
-  async function handleVideoUpload(key: string, file: File) {
-    setUploading((prev) => ({ ...prev, [`vid_${key}`]: true }));
-    try {
-      const url = await uploadVideo(file, section);
-      onContentChange(key, { value: url });
-      await upsertContent(section, key, url, content[key]?.value_ar ?? "");
-      flashSaved(key);
-    } catch (err) {
-      console.error("Failed to upload video:", err);
-    }
-    setUploading((prev) => ({ ...prev, [`vid_${key}`]: false }));
   }
 
   async function handleSaveImage(key: string) {
@@ -151,99 +136,6 @@ export default function SectionEditor({
               const row = content[key] || { value: "", value_ar: "" };
               const enEmpty = !row.value?.trim();
               const arEmpty = !row.value_ar?.trim();
-
-              /* ── Video upload card ── */
-              if (def.type === "video") {
-                const hasUrl = !!row.value?.trim();
-                return (
-                  <div
-                    key={key}
-                    className="py-7 grid md:grid-cols-[220px_1fr_auto] gap-6 md:gap-8 items-start"
-                  >
-                    <label className="text-[10px] font-mono uppercase tracking-[0.25em] text-[var(--admin-text-soft)] pt-3">
-                      {def.label}
-                      <div className="text-[var(--admin-text-dim)] mt-1 normal-case tracking-normal font-mono text-[10px]">
-                        {key}
-                      </div>
-                    </label>
-
-                    <div className="flex-1 space-y-4">
-                      {/* Preview */}
-                      {hasUrl ? (
-                        <div className="relative w-full aspect-video overflow-hidden rounded bg-black">
-                          <video
-                            src={row.value}
-                            className="w-full h-full object-cover"
-                            muted
-                            loop
-                            autoPlay
-                            playsInline
-                          />
-                        </div>
-                      ) : (
-                        <div className="w-full aspect-video rounded bg-[var(--admin-bg)] border border-dashed border-white/15 flex flex-col items-center justify-center gap-3">
-                          <span className="material-symbols-outlined text-4xl text-[var(--admin-text-dim)]">
-                            videocam
-                          </span>
-                          <span className="text-[var(--admin-text-dim)] text-xs font-mono uppercase tracking-[0.2em]">
-                            No video uploaded
-                          </span>
-                        </div>
-                      )}
-
-                      {/* Upload button */}
-                      <input
-                        type="file"
-                        accept="video/mp4,video/webm,video/quicktime,video/*"
-                        ref={(el) => { videoInputRefs.current[key] = el; }}
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) handleVideoUpload(key, file);
-                        }}
-                        className="hidden"
-                      />
-                      <button
-                        onClick={() => videoInputRefs.current[key]?.click()}
-                        disabled={uploading[`vid_${key}`]}
-                        className="w-full py-3 text-[11px] font-mono uppercase tracking-[0.25em] text-white border border-[var(--admin-border)] hover:bg-[var(--admin-accent)]/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {uploading[`vid_${key}`] ? (
-                          <span className="flex items-center justify-center gap-2">
-                            <div className="w-3 h-3 border-[1.5px] border-white/40 border-t-white rounded-full animate-spin" />
-                            Uploading video
-                          </span>
-                        ) : hasUrl ? (
-                          "Replace video"
-                        ) : (
-                          "Upload video"
-                        )}
-                      </button>
-
-                      {/* Manual URL fallback */}
-                      <div>
-                        <label className="text-[10px] font-mono uppercase tracking-[0.25em] text-[var(--admin-text-muted)] block mb-2">
-                          Or paste video URL
-                        </label>
-                        <input
-                          type="url"
-                          value={row.value || ""}
-                          onChange={(e) => onContentChange(key, { value: e.target.value })}
-                          className="w-full px-0 py-2 bg-transparent border-b border-white/15 text-white text-sm focus:outline-none focus:border-[var(--admin-accent)] transition-colors font-body"
-                          placeholder="https://…/video.mp4"
-                        />
-                      </div>
-                    </div>
-
-                    <SaveButton
-                      saving={saving[key]}
-                      saved={savedKeys.has(key)}
-                      onClick={() => handleSaveContent(key)}
-                    />
-                  </div>
-                );
-              }
-
-              /* ── Standard text field ── */
               return (
                 <div
                   key={key}
@@ -447,7 +339,7 @@ export default function SectionEditor({
 interface FieldRowProps {
   flagLabel: string;
   flagTone: "neutral" | "accent";
-  type: "text" | "textarea" | "url" | "email" | "phone" | "video";
+  type: "text" | "textarea" | "url" | "email" | "phone";
   value: string;
   placeholder?: string;
   label?: string;
