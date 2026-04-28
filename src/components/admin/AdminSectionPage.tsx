@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { getContentRaw, getImagesRaw } from "@/lib/cms";
+import { getContentRaw, getImagesRaw, getVideosRaw } from "@/lib/cms";
 import SectionEditor from "@/components/admin/SectionEditor";
 
 interface AdminSectionPageProps {
@@ -20,6 +20,11 @@ export type LocalisedImageMap = Record<
   { url: string; alt: string; alt_ar: string }
 >;
 
+export type LocalisedVideoMap = Record<
+  string,
+  { url: string; alt: string; alt_ar: string }
+>;
+
 export default function AdminSectionPage({
   section,
   sectionTitle,
@@ -27,16 +32,19 @@ export default function AdminSectionPage({
 }: AdminSectionPageProps) {
   const [content, setContent] = useState<LocalisedContentMap>({});
   const [images, setImages] = useState<LocalisedImageMap>({});
+  const [videos, setVideos] = useState<LocalisedVideoMap>({});
   const [loading, setLoading] = useState(true);
 
   const loadData = useCallback(async () => {
     setLoading(true);
-    const [c, i] = await Promise.all([
+    const [c, i, v] = await Promise.all([
       getContentRaw(section),
       getImagesRaw(section),
+      getVideosRaw(section),
     ]);
     setContent(c);
     setImages(i);
+    setVideos(v);
     setLoading(false);
   }, [section]);
 
@@ -73,6 +81,21 @@ export default function AdminSectionPage({
     }));
   }
 
+  function handleVideoChange(
+    key: string,
+    patch: Partial<{ url: string; alt: string; alt_ar: string }>
+  ) {
+    setVideos((prev) => ({
+      ...prev,
+      [key]: {
+        url: prev[key]?.url ?? "",
+        alt: prev[key]?.alt ?? "",
+        alt_ar: prev[key]?.alt_ar ?? "",
+        ...patch,
+      },
+    }));
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
@@ -93,8 +116,10 @@ export default function AdminSectionPage({
       sectionIcon={sectionIcon}
       content={content}
       images={images}
+      videos={videos}
       onContentChange={handleContentChange}
       onImageChange={handleImageChange}
+      onVideoChange={handleVideoChange}
     />
   );
 }

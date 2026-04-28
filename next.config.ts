@@ -18,8 +18,8 @@ const CSP_DIRECTIVES = [
   // Frames — disallow by default
   "frame-ancestors 'none'",
   "frame-src 'none'",
-  // Media
-  "media-src 'self'",
+  // Media — self + Supabase storage
+  "media-src 'self' https://cmubwrhnnuxphrblzpkh.supabase.co",
   // Object
   "object-src 'none'",
   // Manifest

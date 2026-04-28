@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 interface TypeWriterProps {
-  lines: { text: string; className?: string }[];
+  lines: { text: string; className?: string; style?: React.CSSProperties }[];
   /** Milliseconds between each character */
   speed?: number;
   /** Milliseconds to pause between lines */
@@ -77,7 +77,7 @@ export default function TypeWriter({
         return (
           <span key={i}>
             {i > 0 && i <= lineIndex && <br />}
-            <span className={line.className}>
+            <span className={line.className} style={line.style}>
               {display}
               {i === lineIndex && !done && (
                 <span

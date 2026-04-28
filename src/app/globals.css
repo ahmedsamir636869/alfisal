@@ -221,6 +221,42 @@ a, button, input, select, textarea, [role="button"] {
   border-radius: 2px;
 }
 
+/* ── Button press feedback ───────────────────────────────────────────── */
+/* Per ui-animation skill: 100-160ms, enter curve, scale(0.97) */
+:where(a, button)[class*="bg-"] {
+  transition: transform 140ms cubic-bezier(0.22, 1, 0.36, 1),
+              color 300ms ease,
+              background-color 300ms ease,
+              border-color 300ms ease;
+}
+:where(a, button)[class*="bg-"]:active {
+  transform: scale(0.97);
+}
+
+/* ── Hover transitions (gated for pointer devices) ───────────────────── */
+@media (hover: hover) and (pointer: fine) {
+  .group:hover .group-hover-lift {
+    transform: translateY(-4px);
+  }
+  .group-hover-lift {
+    transition: transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+/* ── Section heading accent line ─────────────────────────────────────── */
+.heading-accent::after {
+  content: "";
+  display: block;
+  width: 0;
+  height: 2px;
+  background: var(--color-saffron-deep);
+  margin-top: 0.6em;
+  transition: width 800ms cubic-bezier(0.22, 1, 0.36, 1) 200ms;
+}
+.heading-accent.is-visible::after {
+  width: 48px;
+}
+
 /* content-visibility for off-screen list items (rendering-content-visibility) */
 .cv-auto {
   content-visibility: auto;

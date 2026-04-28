@@ -3,6 +3,7 @@ import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { getContentServer, getImagesServer } from "@/lib/cms";
 import { getLocale } from "@/lib/i18n.server";
+import { responsiveFs } from "@/lib/responsive-fs";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -37,11 +38,13 @@ export default async function AboutPage() {
   ];
 
   const principles = [
-    { title: content.principle1_title, text: content.principle1_text },
-    { title: content.principle2_title, text: content.principle2_text },
-    { title: content.principle3_title, text: content.principle3_text },
-    { title: content.principle4_title, text: content.principle4_text },
+    { title: content.principle1_title, text: content.principle1_text, tKey: "principle1_title", xKey: "principle1_text" },
+    { title: content.principle2_title, text: content.principle2_text, tKey: "principle2_title", xKey: "principle2_text" },
+    { title: content.principle3_title, text: content.principle3_text, tKey: "principle3_title", xKey: "principle3_text" },
+    { title: content.principle4_title, text: content.principle4_text, tKey: "principle4_title", xKey: "principle4_text" },
   ];
+
+  const fs = (key: string) => responsiveFs(content, key);
 
   return (
     <>
@@ -49,17 +52,17 @@ export default async function AboutPage() {
       <section className="pt-28 sm:pt-36 md:pt-44 pb-14 sm:pb-20 md:pb-28 border-b border-[var(--color-hairline)]">
         <div className="max-w-[1440px] mx-auto px-5 sm:px-6 md:px-10 grid grid-cols-12 gap-x-4 sm:gap-x-6 md:gap-x-10">
           <div className="col-span-12 md:col-span-3">
-            <p className="font-mono text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)] mb-4 sm:mb-6">
+            <p className="font-mono text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)] mb-4 sm:mb-6" style={fs("subtitle")}>
               {content.subtitle}
             </p>
           </div>
           <div className="col-span-12 md:col-span-9">
-            <h1 className="font-display text-[clamp(2.25rem,7vw,6.5rem)] leading-[1] tracking-[-0.035em] text-[var(--color-ink)]">
+            <h1 className="font-display text-[clamp(2.25rem,7vw,6.5rem)] leading-[1] tracking-[-0.035em] text-[var(--color-ink)]" style={fs("page_title")}>
               {content.page_title}
               <span className="text-[var(--color-saffron-deep)]">.</span>
             </h1>
             {content.intro_paragraph && (
-              <p className="mt-6 sm:mt-10 max-w-[62ch] font-display text-[1.15rem] sm:text-[1.5rem] leading-[1.5] text-[var(--color-ink-soft)] italic">
+              <p className="mt-6 sm:mt-10 max-w-[62ch] font-display text-[1.15rem] sm:text-[1.5rem] leading-[1.5] text-[var(--color-ink-soft)] italic" style={fs("intro_paragraph")}>
                 {content.intro_paragraph}
               </p>
             )}
@@ -94,10 +97,10 @@ export default async function AboutPage() {
                 <span className="font-mono text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)] tabular-nums">01</span>
                 <span className="h-px flex-1 bg-[var(--color-ink)]/15" />
               </div>
-              <h2 className="font-display text-3xl md:text-4xl leading-[1.1] tracking-[-0.02em] text-[var(--color-ink)] mb-5">
+              <h2 className="font-display text-3xl md:text-4xl leading-[1.1] tracking-[-0.02em] text-[var(--color-ink)] mb-5" style={fs("mission_title")}>
                 {content.mission_title}
               </h2>
-              <p className="text-[var(--color-ink-soft)] leading-[1.8] text-[17px]">
+              <p className="text-[var(--color-ink-soft)] leading-[1.8] text-[17px]" style={fs("mission_text")}>
                 {content.mission_text}
               </p>
             </div>
@@ -107,10 +110,10 @@ export default async function AboutPage() {
                 <span className="font-mono text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)] tabular-nums">02</span>
                 <span className="h-px flex-1 bg-[var(--color-ink)]/15" />
               </div>
-              <h2 className="font-display text-3xl md:text-4xl leading-[1.1] tracking-[-0.02em] text-[var(--color-ink)] mb-5">
+              <h2 className="font-display text-3xl md:text-4xl leading-[1.1] tracking-[-0.02em] text-[var(--color-ink)] mb-5" style={fs("vision_title")}>
                 {content.vision_title}
               </h2>
-              <p className="text-[var(--color-ink-soft)] leading-[1.8] text-[17px]">
+              <p className="text-[var(--color-ink-soft)] leading-[1.8] text-[17px]" style={fs("vision_text")}>
                 {content.vision_text}
               </p>
             </div>
@@ -121,10 +124,10 @@ export default async function AboutPage() {
                   <span className="font-mono text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)] tabular-nums">03</span>
                   <span className="h-px flex-1 bg-[var(--color-ink)]/15" />
                 </div>
-                <h2 className="font-display text-3xl md:text-4xl leading-[1.1] tracking-[-0.02em] text-[var(--color-ink)] mb-5">
+                <h2 className="font-display text-3xl md:text-4xl leading-[1.1] tracking-[-0.02em] text-[var(--color-ink)] mb-5" style={fs("philosophy_title")}>
                   {content.philosophy_title}
                 </h2>
-                <p className="text-[var(--color-ink-soft)] leading-[1.8] text-[17px]">
+                <p className="text-[var(--color-ink-soft)] leading-[1.8] text-[17px]" style={fs("philosophy_text")}>
                   {content.philosophy_text}
                 </p>
               </div>
@@ -163,10 +166,10 @@ export default async function AboutPage() {
       <section className="py-14 sm:py-24 md:py-36">
         <div className="max-w-[1440px] mx-auto px-5 sm:px-6 md:px-10 grid grid-cols-12 gap-x-4 sm:gap-x-6 md:gap-x-10">
           <div className="col-span-12 md:col-span-4 md:sticky md:top-28 self-start mb-8 sm:mb-12 md:mb-0">
-            <p className="font-mono text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)] mb-5">
+            <p className="font-mono text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)] mb-5" style={fs("principles_label")}>
               {content.principles_label}
             </p>
-            <h2 className="font-display text-4xl md:text-[3.25rem] leading-[1.05] tracking-[-0.03em] text-[var(--color-ink)]">
+            <h2 className="font-display text-4xl md:text-[3.25rem] leading-[1.05] tracking-[-0.03em] text-[var(--color-ink)]" style={fs("principles_heading")}>
               {content.principles_heading}
             </h2>
           </div>
@@ -178,10 +181,10 @@ export default async function AboutPage() {
                   P/0{i + 1}
                 </span>
                 <div className="col-span-12 md:col-span-10">
-                  <h3 className="font-display text-xl sm:text-2xl md:text-[2rem] leading-[1.15] tracking-[-0.02em] text-[var(--color-ink)] mb-3 sm:mb-4">
+                  <h3 className="font-display text-xl sm:text-2xl md:text-[2rem] leading-[1.15] tracking-[-0.02em] text-[var(--color-ink)] mb-3 sm:mb-4" style={fs(p.tKey)}>
                     {p.title}
                   </h3>
-                  <p className="text-[var(--color-ink-soft)] leading-[1.8] max-w-[58ch] text-[15px] sm:text-base">
+                  <p className="text-[var(--color-ink-soft)] leading-[1.8] max-w-[58ch] text-[15px] sm:text-base" style={fs(p.xKey)}>
                     {p.text}
                   </p>
                 </div>
@@ -195,10 +198,10 @@ export default async function AboutPage() {
       <section className="border-t border-[var(--color-hairline)] bg-[var(--color-bone)]">
         <div className="max-w-[1440px] mx-auto px-5 sm:px-6 md:px-10 py-12 sm:py-16 md:py-20 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 sm:gap-8">
           <div>
-            <p className="font-mono text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)] mb-3 sm:mb-4">
+            <p className="font-mono text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)] mb-3 sm:mb-4" style={fs("cta_label")}>
               {content.cta_label}
             </p>
-            <h2 className="font-display text-2xl sm:text-3xl md:text-[2.4rem] leading-[1.1] tracking-[-0.02em] text-[var(--color-ink)] max-w-[28ch]">
+            <h2 className="font-display text-2xl sm:text-3xl md:text-[2.4rem] leading-[1.1] tracking-[-0.02em] text-[var(--color-ink)] max-w-[28ch]" style={fs("cta_title")}>
               {content.cta_title}
             </h2>
           </div>

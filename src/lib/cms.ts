@@ -9,13 +9,25 @@ export interface ContentBlock {
   key: string;
   value: string;
   value_ar: string | null;
-  type: "text" | "textarea" | "url" | "email" | "phone";
+  type: "text" | "textarea" | "url" | "email" | "phone" | "number";
   label: string;
   created_at: string;
   updated_at: string;
 }
 
 export interface ContentImage {
+  id: string;
+  section: string;
+  key: string;
+  url: string;
+  alt: string;
+  alt_ar: string | null;
+  label: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ContentVideo {
   id: string;
   section: string;
   key: string;
@@ -284,6 +296,7 @@ export const DEFAULT_CONTENT: Record<string, Record<string, ContentValue>> = {
 export const DEFAULT_IMAGES: Record<string, Record<string, { url: string; alt: string; alt_ar?: string; label: string }>> = {
   hero: {
     background: { url: "/hero-bg.jpg", alt: "Modern glass and steel skyscraper", alt_ar: "ناطحة سحاب من الزجاج والفولاذ", label: "Hero Background Image" },
+    before_photo: { url: "/hero-bg.jpg", alt: "Before — Reference", alt_ar: "قبل — المرجع", label: "Slider — Before Photo" },
   },
   featured_projects: {
     project1_image: {
@@ -318,6 +331,12 @@ export const DEFAULT_IMAGES: Record<string, Record<string, { url: string; alt: s
   }
 };
 
+export const DEFAULT_VIDEOS: Record<string, Record<string, { url: string; alt: string; alt_ar?: string; label: string }>> = {
+  hero: {
+    after_video: { url: "", alt: "After — Completed project", alt_ar: "بعد — المشروع المكتمل", label: "Slider — After Video" },
+  },
+};
+
 // ── Internal helpers ───────────────────────────────────────────────────────────
 
 function pickValue(en: string, ar: string | null | undefined, lang: Locale): string {
@@ -346,6 +365,21 @@ function imageDefaultsToRecord(
 ): Record<string, { url: string; alt: string }> {
   const out: Record<string, { url: string; alt: string }> = {};
   const defs = DEFAULT_IMAGES[section] || {};
+  for (const [key, def] of Object.entries(defs)) {
+    out[key] = {
+      url: def.url,
+      alt: pickValue(def.alt, def.alt_ar, lang),
+    };
+  }
+  return out;
+}
+
+function videoDefaultsToRecord(
+  section: string,
+  lang: Locale
+): Record<string, { url: string; alt: string }> {
+  const out: Record<string, { url: string; alt: string }> = {};
+  const defs = DEFAULT_VIDEOS[section] || {};
   for (const [key, def] of Object.entries(defs)) {
     out[key] = {
       url: def.url,
@@ -402,6 +436,30 @@ export async function getImages(
   return result;
 }
 
+export async function getVideos(
+  section: string,
+  lang: Locale = DEFAULT_LOCALE
+): Promise<Record<string, { url: string; alt: string }>> {
+  const supabase = createBrowserClient();
+  const { data, error } = await supabase
+    .from("site_videos")
+    .select("key, url, alt, alt_ar")
+    .eq("section", section);
+
+  const result = videoDefaultsToRecord(section, lang);
+
+  if (data && !error) {
+    for (const row of data) {
+      result[row.key] = {
+        url: row.url,
+        alt: pickValue(row.alt, row.alt_ar, lang),
+      };
+    }
+  }
+
+  return result;
+}
+
 // Returns the raw row (both languages) — used in the admin where editors need to see both.
 export async function getContentRaw(
   section: string
@@ -445,6 +503,35 @@ export async function getImagesRaw(
     {};
 
   const defs = DEFAULT_IMAGES[section] || {};
+  for (const [key, def] of Object.entries(defs)) {
+    result[key] = { url: def.url, alt: def.alt, alt_ar: def.alt_ar ?? "" };
+  }
+
+  if (data && !error) {
+    for (const row of data) {
+      result[row.key] = {
+        url: row.url,
+        alt: row.alt ?? "",
+        alt_ar: row.alt_ar ?? "",
+      };
+    }
+  }
+
+  return result;
+}
+
+export async function getVideosRaw(
+  section: string
+): Promise<Record<string, { url: string; alt: string; alt_ar: string }>> {
+  const supabase = createBrowserClient();
+  const { data, error } = await supabase
+    .from("site_videos")
+    .select("key, url, alt, alt_ar")
+    .eq("section", section);
+
+  const result: Record<string, { url: string; alt: string; alt_ar: string }> = {};
+
+  const defs = DEFAULT_VIDEOS[section] || {};
   for (const [key, def] of Object.entries(defs)) {
     result[key] = { url: def.url, alt: def.alt, alt_ar: def.alt_ar ?? "" };
   }
@@ -577,6 +664,54 @@ export async function uploadImage(file: File, section: string): Promise<string> 
   return urlData.publicUrl;
 }
 
+export async function upsertVideo(
+  section: string,
+  key: string,
+  url: string,
+  alt: string,
+  alt_ar?: string | null
+): Promise<void> {
+  const supabase = createBrowserClient();
+  const defaults = DEFAULT_VIDEOS[section]?.[key];
+
+  const payload: Record<string, unknown> = {
+    section,
+    key,
+    url,
+    alt,
+    label: defaults?.label || key,
+    updated_at: new Date().toISOString(),
+  };
+
+  if (alt_ar !== undefined) {
+    payload.alt_ar = alt_ar;
+  }
+
+  const { error } = await supabase
+    .from("site_videos")
+    .upsert(payload, { onConflict: "section,key" });
+
+  if (error) throw error;
+}
+
+export async function uploadVideo(file: File, section: string): Promise<string> {
+  const supabase = createBrowserClient();
+  const ext = file.name.split(".").pop();
+  const fileName = `${section}/${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
+
+  const { error } = await supabase.storage
+    .from("site-videos")
+    .upload(fileName, file, { upsert: true });
+
+  if (error) throw error;
+
+  const { data: urlData } = supabase.storage
+    .from("site-videos")
+    .getPublicUrl(fileName);
+
+  return urlData.publicUrl;
+}
+
 // ── Server-side helpers ────────────────────────────────────────────────────────
 
 export async function getContentServer(
@@ -611,6 +746,30 @@ export async function getImagesServer(
     .eq("section", section);
 
   const result = imageDefaultsToRecord(section, lang);
+
+  if (data && !error) {
+    for (const row of data) {
+      result[row.key] = {
+        url: row.url,
+        alt: pickValue(row.alt, row.alt_ar, lang),
+      };
+    }
+  }
+
+  return result;
+}
+
+export async function getVideosServer(
+  supabase: ReturnType<typeof createBrowserClient>,
+  section: string,
+  lang: Locale = DEFAULT_LOCALE
+): Promise<Record<string, { url: string; alt: string }>> {
+  const { data, error } = await supabase
+    .from("site_videos")
+    .select("key, url, alt, alt_ar")
+    .eq("section", section);
+
+  const result = videoDefaultsToRecord(section, lang);
 
   if (data && !error) {
     for (const row of data) {

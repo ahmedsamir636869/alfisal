@@ -3,6 +3,7 @@ import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { getContentServer } from "@/lib/cms";
 import { getLocale } from "@/lib/i18n.server";
+import { responsiveFs } from "@/lib/responsive-fs";
 import ProjectGallery from "@/components/ProjectGallery";
 
 export const metadata: Metadata = {
@@ -55,17 +56,17 @@ export default async function ProjectsPage() {
       <section className="pt-28 sm:pt-36 md:pt-44 pb-10 sm:pb-14 md:pb-20 border-b border-[var(--color-hairline)]">
         <div className="max-w-[1440px] mx-auto px-5 sm:px-6 md:px-10 grid grid-cols-12 gap-x-4 sm:gap-x-6 md:gap-x-10">
           <div className="col-span-12 md:col-span-3">
-            <p className="font-mono text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)] mb-4 sm:mb-6">
+            <p className="font-mono text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)] mb-4 sm:mb-6" style={responsiveFs(content, "page_subtitle")}>
               {content.page_subtitle || "01 — The Archive"}
             </p>
           </div>
           <div className="col-span-12 md:col-span-9">
-            <h1 className="font-display text-[clamp(2.25rem,7vw,6.5rem)] leading-[1] tracking-[-0.035em] text-[var(--color-ink)]">
+            <h1 className="font-display text-[clamp(2.25rem,7vw,6.5rem)] leading-[1] tracking-[-0.035em] text-[var(--color-ink)]" style={responsiveFs(content, "page_title")}>
               {content.page_title || "Selected works."}
               <span className="text-[var(--color-saffron-deep)]">.</span>
             </h1>
             {content.intro_paragraph && (
-              <p className="mt-5 sm:mt-8 max-w-[62ch] text-[var(--color-ink-soft)] leading-[1.8] text-base sm:text-lg">
+              <p className="mt-5 sm:mt-8 max-w-[62ch] text-[var(--color-ink-soft)] leading-[1.8] text-base sm:text-lg" style={responsiveFs(content, "intro_paragraph")}>
                 {content.intro_paragraph}
               </p>
             )}

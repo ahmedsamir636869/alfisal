@@ -3,11 +3,15 @@ import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { getContentServer } from "@/lib/cms";
 import { getLocale } from "@/lib/i18n.server";
+import { responsiveFs } from "@/lib/responsive-fs";
 
 export default async function Footer() {
   const [cookieStore, locale] = await Promise.all([cookies(), getLocale()]);
   const supabase = await createClient(cookieStore);
   const content = await getContentServer(supabase, "footer", locale);
+
+  // Shorthand for responsive font sizes from CMS
+  const fs = (key: string) => responsiveFs(content, key);
 
   const offices = [
     { label: content.office1, href: content.office1_url || "#" },
@@ -32,12 +36,18 @@ export default async function Footer() {
         {/* ── Lead ────────────────────────────────────────────────── */}
         <div className="grid grid-cols-12 gap-x-4 sm:gap-x-6 md:gap-x-10 gap-y-10 sm:gap-y-14 pb-10 sm:pb-16 border-b border-[var(--color-bone)]/15">
           <div className="col-span-12 md:col-span-6 lg:col-span-7">
-            <p className="font-mono text-[11px] tracking-[0.18em] uppercase text-[var(--color-bone)]/55 mb-4 sm:mb-6">
+            <p
+              className="font-mono text-[11px] tracking-[0.18em] uppercase text-[var(--color-bone)]/55 mb-4 sm:mb-6"
+              style={fs("footer_label")}
+            >
               {content.footer_label || "Correspondence"}
             </p>
-            <p className="font-display text-[clamp(1.5rem,5vw,4.5rem)] leading-[1.1] tracking-[-0.025em] max-w-[22ch]">
+            <p
+              className="font-display text-[clamp(1.5rem,5vw,4.5rem)] leading-[1.1] tracking-[-0.025em] max-w-[22ch]"
+              style={fs("footer_heading")}
+            >
               {content.footer_heading ||
-                "Let's put something well-made into the world."}
+                "Let\u2019s put something well-made into the world."}
             </p>
             <div className="mt-7 sm:mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4">
               <Link
@@ -57,14 +67,17 @@ export default async function Footer() {
           </div>
 
           <div className="col-span-12 md:col-span-6 lg:col-span-5 grid grid-cols-2 gap-x-4 sm:gap-x-6 gap-y-8 sm:gap-y-10">
-            <FooterList title={content.offices_title || "Studios"} items={offices} />
-            <FooterList title={content.resources_title || "Resources"} items={resources} />
+            <FooterList title={content.offices_title || "Studios"} items={offices} titleStyle={fs("offices_title")} />
+            <FooterList title={content.resources_title || "Resources"} items={resources} titleStyle={fs("resources_title")} />
           </div>
         </div>
 
         {/* ── Brandmark line ──────────────────────────────────────── */}
         <div className="py-10 sm:py-14 md:py-20 relative overflow-hidden">
-          <div className="font-display leading-none tracking-[-0.04em] text-[clamp(3.5rem,16vw,16rem)] whitespace-nowrap text-[var(--color-bone)]/90 select-none">
+          <div
+            className="font-display leading-none tracking-[-0.04em] text-[clamp(3.5rem,16vw,16rem)] whitespace-nowrap text-[var(--color-bone)]/90 select-none"
+            style={fs("brand_name")}
+          >
             {(content.brand_name || "Alfisal.").toUpperCase()}
             <span className="text-[var(--color-saffron)]">.</span>
           </div>
@@ -72,7 +85,10 @@ export default async function Footer() {
 
         {/* ── Meta row ────────────────────────────────────────────── */}
         <div className="grid grid-cols-12 gap-x-4 sm:gap-x-6 md:gap-x-10 gap-y-5 sm:gap-y-6 border-t border-[var(--color-bone)]/15 pt-6 sm:pt-8">
-          <p className="col-span-12 md:col-span-5 text-[var(--color-bone)]/60 text-sm leading-relaxed max-w-[52ch]">
+          <p
+            className="col-span-12 md:col-span-5 text-[var(--color-bone)]/60 text-sm leading-relaxed max-w-[52ch]"
+            style={fs("brand_description")}
+          >
             {content.brand_description}
           </p>
           <div className="col-span-12 md:col-span-4 flex flex-col gap-2 text-[var(--color-bone)]/60 text-sm">
@@ -91,8 +107,11 @@ export default async function Footer() {
               )}
             </ul>
           </div>
-          <div className="col-span-12 md:col-span-3 flex md:justify-end text-[var(--color-bone)]/50 text-xs tracking-[0.12em] uppercase font-mono">
-            © {new Date().getFullYear()} · {content.copyright || "Alfisal"}
+          <div
+            className="col-span-12 md:col-span-3 flex md:justify-end text-[var(--color-bone)]/50 text-xs tracking-[0.12em] uppercase font-mono"
+            style={fs("copyright")}
+          >
+            &copy; {new Date().getFullYear()} &middot; {content.copyright || "Alfisal"}
           </div>
         </div>
       </div>
@@ -103,13 +122,18 @@ export default async function Footer() {
 function FooterList({
   title,
   items,
+  titleStyle,
 }: {
   title: string;
   items: { label?: string; href: string }[];
+  titleStyle?: React.CSSProperties;
 }) {
   return (
     <div>
-      <p className="font-mono text-[10px] tracking-[0.18em] uppercase text-[var(--color-bone)]/45 mb-5">
+      <p
+        className="font-mono text-[10px] tracking-[0.18em] uppercase text-[var(--color-bone)]/45 mb-5"
+        style={titleStyle}
+      >
         {title}
       </p>
       <ul className="space-y-1 sm:space-y-3 text-[var(--color-bone)]/80">

@@ -6,6 +6,8 @@ import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
 import { getContentServer } from "@/lib/cms";
 import { getLocale } from "@/lib/i18n.server";
+import { responsiveFs } from "@/lib/responsive-fs";
+import ScrollReveal from "@/components/ScrollReveal";
 
 export const metadata: Metadata = {
   // Home page inherits the default title — no override needed for title
@@ -72,16 +74,27 @@ export default async function Page() {
     {
       title: valuesContent.card1_title,
       text: valuesContent.card1_text,
+      titleKey: "card1_title",
+      textKey: "card1_text",
     },
     {
       title: valuesContent.card2_title,
       text: valuesContent.card2_text,
+      titleKey: "card2_title",
+      textKey: "card2_text",
     },
     {
       title: valuesContent.card3_title,
       text: valuesContent.card3_text,
+      titleKey: "card3_title",
+      textKey: "card3_text",
     },
   ];
+
+  // Responsive font size helpers per section
+  const vFs = (key: string) => responsiveFs(valuesContent, key);
+  const pFs = (key: string) => responsiveFs(projectsContent, key);
+  const cFs = (key: string) => responsiveFs(ctaContent, key);
 
   return (
     <>
@@ -95,46 +108,54 @@ export default async function Page() {
         <div className="max-w-[1440px] mx-auto px-5 sm:px-6 md:px-10">
           <div className="grid grid-cols-12 gap-x-4 sm:gap-x-6 md:gap-x-10 mb-12 sm:mb-20">
             <div className="col-span-12 md:col-span-4">
-              <p className="font-mono text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)] mb-4 sm:mb-6">
-                {valuesContent.section_label || "01 — Operating Principles"}
-              </p>
+              <ScrollReveal animation="fade-up">
+                <p className="font-mono text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)] mb-4 sm:mb-6" style={vFs("section_label")}>
+                  {valuesContent.section_label || "01 — Operating Principles"}
+                </p>
+              </ScrollReveal>
             </div>
             <div className="col-span-12 md:col-span-8">
-              <h2
-                id="principles-heading"
-                className="font-display text-[clamp(1.75rem,4.5vw,4rem)] leading-[1.1] tracking-[-0.025em] text-[var(--color-ink)] max-w-[22ch]"
-              >
-                {valuesContent.section_title ||
-                  "We build with the restraint of a surgeon and the patience of a cartographer."}
-              </h2>
-              <p className="mt-5 sm:mt-8 max-w-[62ch] text-[var(--color-ink-soft)] leading-[1.8] text-base sm:text-lg">
-                {valuesContent.section_description}
-              </p>
+              <ScrollReveal animation="fade-up" delay={100}>
+                <h2
+                  id="principles-heading"
+                  className="font-display text-[clamp(1.75rem,4.5vw,4rem)] leading-[1.1] tracking-[-0.025em] text-[var(--color-ink)] max-w-[22ch]"
+                  style={vFs("section_title")}
+                >
+                  {valuesContent.section_title ||
+                    "We build with the restraint of a surgeon and the patience of a cartographer."}
+                </h2>
+              </ScrollReveal>
+              <ScrollReveal animation="fade-up" delay={200}>
+                <p className="mt-5 sm:mt-8 max-w-[62ch] text-[var(--color-ink-soft)] leading-[1.8] text-base sm:text-lg" style={vFs("section_description")}>
+                  {valuesContent.section_description}
+                </p>
+              </ScrollReveal>
             </div>
           </div>
 
           <div className="border-t border-[var(--color-ink)]/10">
             <div className="grid grid-cols-1 md:grid-cols-3">
               {principles.map((p, i) => (
-                <article
-                  key={i}
-                  className={`py-8 sm:py-12 md:py-16 md:pr-10 md:pl-10 first:md:pl-0 last:md:pr-0 ${
-                    i !== 0 ? "border-t md:border-t-0 md:border-l border-[var(--color-ink)]/10" : ""
-                  }`}
-                >
-                  <div className="flex items-baseline gap-4 mb-4 sm:mb-6">
-                    <span className="font-mono text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)] tabular-nums">
-                      0{i + 1}
-                    </span>
-                    <span className="h-px flex-1 bg-[var(--color-ink)]/15" />
-                  </div>
-                  <h3 className="font-display text-xl sm:text-2xl md:text-3xl leading-[1.15] text-[var(--color-ink)] mb-3 sm:mb-5">
-                    {p.title}
-                  </h3>
-                  <p className="text-[var(--color-ink-soft)] leading-[1.8] text-[15px] sm:text-base">
-                    {p.text}
-                  </p>
-                </article>
+                <ScrollReveal key={i} animation="fade-up" delay={i * 120} duration={800}>
+                  <article
+                    className={`py-8 sm:py-12 md:py-16 md:pr-10 md:pl-10 first:md:pl-0 last:md:pr-0 ${
+                      i !== 0 ? "border-t md:border-t-0 md:border-l border-[var(--color-ink)]/10" : ""
+                    }`}
+                  >
+                    <div className="flex items-baseline gap-4 mb-4 sm:mb-6">
+                      <span className="font-mono text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)] tabular-nums">
+                        0{i + 1}
+                      </span>
+                      <span className="h-px flex-1 bg-[var(--color-ink)]/15" />
+                    </div>
+                    <h3 className="font-display text-xl sm:text-2xl md:text-3xl leading-[1.15] text-[var(--color-ink)] mb-3 sm:mb-5" style={vFs(p.titleKey)}>
+                      {p.title}
+                    </h3>
+                    <p className="text-[var(--color-ink-soft)] leading-[1.8] text-[15px] sm:text-base" style={vFs(p.textKey)}>
+                      {p.text}
+                    </p>
+                  </article>
+                </ScrollReveal>
               ))}
             </div>
           </div>
@@ -148,29 +169,34 @@ export default async function Page() {
       >
         <div className="max-w-[1440px] mx-auto px-5 sm:px-6 md:px-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 sm:gap-10 mb-10 sm:mb-16 md:mb-24">
-            <div>
-              <p className="font-mono text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)] mb-3 sm:mb-5">
-                {projectsContent.section_label || "02 — Selected Works"}
-              </p>
-              <h2
-                id="featured-heading"
-                className="font-display text-[clamp(1.75rem,5vw,4.75rem)] leading-[1.05] tracking-[-0.03em] text-[var(--color-ink)] max-w-[16ch]"
+            <ScrollReveal animation="fade-up">
+              <div>
+                <p className="font-mono text-[11px] tracking-[0.18em] uppercase text-[var(--color-muted)] mb-3 sm:mb-5" style={pFs("section_label")}>
+                  {projectsContent.section_label || "02 — Selected Works"}
+                </p>
+                <h2
+                  id="featured-heading"
+                  className="font-display text-[clamp(1.75rem,5vw,4.75rem)] leading-[1.05] tracking-[-0.03em] text-[var(--color-ink)] max-w-[16ch]"
+                  style={pFs("section_title")}
+                >
+                  {projectsContent.section_title || "Architectural landmarks."}
+                </h2>
+              </div>
+            </ScrollReveal>
+            <ScrollReveal animation="fade-up" delay={150}>
+              <Link
+                href="/projects"
+                className="group inline-flex items-center gap-3 text-[var(--color-ink)] text-[12px] tracking-[0.1em] uppercase border-b border-[var(--color-ink)] pb-1 self-start md:self-auto hover:text-[var(--color-saffron-deep)] hover:border-[var(--color-saffron-deep)] transition-colors min-h-[44px]"
               >
-                {projectsContent.section_title || "Architectural landmarks."}
-              </h2>
-            </div>
-            <Link
-              href="/projects"
-              className="group inline-flex items-center gap-3 text-[var(--color-ink)] text-[12px] tracking-[0.1em] uppercase border-b border-[var(--color-ink)] pb-1 self-start md:self-auto hover:text-[var(--color-saffron-deep)] hover:border-[var(--color-saffron-deep)] transition-colors min-h-[44px]"
-            >
-              {locale === "ar" ? "عرض الأرشيف الكامل" : "View the full archive"}
-              <span
-                aria-hidden
-                className={`material-symbols-outlined text-[16px] transition-transform duration-500 group-hover:translate-x-1 ${locale === "ar" ? "rotate-180" : ""}`}
-              >
-                arrow_forward
-              </span>
-            </Link>
+                {locale === "ar" ? "عرض الأرشيف الكامل" : "View the full archive"}
+                <span
+                  aria-hidden
+                  className={`material-symbols-outlined text-[16px] transition-transform duration-500 group-hover:translate-x-1 ${locale === "ar" ? "rotate-180" : ""}`}
+                >
+                  arrow_forward
+                </span>
+              </Link>
+            </ScrollReveal>
           </div>
 
           {featured.length === 0 ? (
@@ -181,15 +207,29 @@ export default async function Page() {
             <div className="grid grid-cols-12 gap-x-4 sm:gap-x-6 md:gap-x-10 gap-y-10 sm:gap-y-14 md:gap-y-24">
               {/* Large feature */}
               {featured[0] && (
-                <FeatureLarge project={featured[0]} index={1} locale={locale} />
+                <ScrollReveal animation="scale-in" duration={900} className="col-span-12">
+                  <FeatureLarge project={featured[0]} index={1} locale={locale} />
+                </ScrollReveal>
               )}
 
               {/* Secondary pair */}
-              {featured[1] && <FeatureSmall project={featured[1]} index={2} colSpan="md:col-span-6" locale={locale} />}
-              {featured[2] && <FeatureSmall project={featured[2]} index={3} colSpan="md:col-span-6" locale={locale} />}
+              {featured[1] && (
+                <ScrollReveal animation="fade-up" className="col-span-12 md:col-span-6">
+                  <FeatureSmall project={featured[1]} index={2} colSpan="" locale={locale} />
+                </ScrollReveal>
+              )}
+              {featured[2] && (
+                <ScrollReveal animation="fade-up" delay={120} className="col-span-12 md:col-span-6">
+                  <FeatureSmall project={featured[2]} index={3} colSpan="" locale={locale} />
+                </ScrollReveal>
+              )}
 
               {/* Fourth if present */}
-              {featured[3] && <FeatureWide project={featured[3]} index={4} locale={locale} />}
+              {featured[3] && (
+                <ScrollReveal animation="scale-in" duration={900} className="col-span-12">
+                  <FeatureWide project={featured[3]} index={4} locale={locale} />
+                </ScrollReveal>
+              )}
             </div>
           )}
         </div>
@@ -206,25 +246,33 @@ export default async function Page() {
         />
         <div className="max-w-[1440px] mx-auto px-5 sm:px-6 md:px-10 py-16 sm:py-28 md:py-40 grid grid-cols-12 gap-x-4 sm:gap-x-6 md:gap-x-10 items-start">
           <div className="col-span-12 md:col-span-2 mb-4 sm:mb-10 md:mb-0">
-            <span
-              aria-hidden
-              className="font-display text-[4rem] sm:text-[6rem] leading-none text-[var(--color-saffron)] block -mt-2 sm:-mt-6"
-            >
-              “
-            </span>
+            <ScrollReveal animation="scale-in" duration={600}>
+              <span
+                aria-hidden
+                className="font-display text-[4rem] sm:text-[6rem] leading-none text-[var(--color-saffron)] block -mt-2 sm:-mt-6"
+              >
+                &ldquo;
+              </span>
+            </ScrollReveal>
           </div>
           <div className="col-span-12 md:col-span-8">
-            <h2
-              id="cta-heading"
-              className="font-display text-[clamp(1.5rem,4.5vw,4.5rem)] leading-[1.12] tracking-[-0.02em] text-[var(--color-bone)]"
-            >
-              {ctaContent.title ||
-                "Ready to construct your vision?"}
-            </h2>
-            <p className="mt-5 sm:mt-8 max-w-[56ch] text-[var(--color-bone)]/70 leading-[1.8] text-base sm:text-lg">
-              {ctaContent.description}
-            </p>
-            <div className="mt-8 sm:mt-12 flex flex-col sm:flex-row gap-3 sm:gap-4">
+            <ScrollReveal animation="fade-up" delay={100}>
+              <h2
+                id="cta-heading"
+                className="font-display text-[clamp(1.5rem,4.5vw,4.5rem)] leading-[1.12] tracking-[-0.02em] text-[var(--color-bone)]"
+                style={cFs("title")}
+              >
+                {ctaContent.title ||
+                  "Ready to construct your vision?"}
+              </h2>
+            </ScrollReveal>
+            <ScrollReveal animation="fade-up" delay={200}>
+              <p className="mt-5 sm:mt-8 max-w-[56ch] text-[var(--color-bone)]/70 leading-[1.8] text-base sm:text-lg" style={cFs("description")}>
+                {ctaContent.description}
+              </p>
+            </ScrollReveal>
+            <ScrollReveal animation="fade-up" delay={300}>
+              <div className="mt-8 sm:mt-12 flex flex-col sm:flex-row gap-3 sm:gap-4">
               <Link
                 href="/contact"
                 className="group inline-flex items-center justify-center gap-3 bg-[var(--color-bone)] text-[var(--color-ink)] px-7 min-h-[48px] py-3.5 text-[12px] font-medium tracking-[0.1em] uppercase hover:bg-[var(--color-saffron)] active:bg-[var(--color-saffron)] transition-colors duration-300"
@@ -239,11 +287,14 @@ export default async function Page() {
                 {ctaContent.cta_secondary || (locale === "ar" ? "اتصل بالاستوديو" : "Call the studio")}
               </a>
             </div>
+            </ScrollReveal>
           </div>
           <div className="hidden md:block md:col-span-2">
-            <div className="font-mono text-[10px] tracking-[0.18em] uppercase text-[var(--color-bone)]/50">
-              {locale === "ar" ? "٠٤ — استفسار" : "04 — Enquiry"}
-            </div>
+            <ScrollReveal animation="fade-in" delay={400}>
+              <div className="font-mono text-[10px] tracking-[0.18em] uppercase text-[var(--color-bone)]/50">
+                {locale === "ar" ? "٠٤ — استفسار" : "04 — Enquiry"}
+              </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>
