@@ -29,6 +29,7 @@ type ServiceRow = {
   description: string | null;
   description_ar: string | null;
   image_url: string | null;
+  video_url: string | null;
 };
 
 function pick(en: string | null, ar: string | null, locale: "en" | "ar") {
@@ -102,7 +103,16 @@ export default async function ServicesPage() {
                           reverse ? "md:order-2" : ""
                         }`}
                       >
-                        {s.image_url && (
+                        {s.video_url ? (
+                          <video
+                            src={s.video_url}
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            className="absolute inset-0 w-full h-full object-cover"
+                          />
+                        ) : s.image_url ? (
                           <Image
                             src={s.image_url}
                             alt={s.title || "Service"}
@@ -110,7 +120,7 @@ export default async function ServicesPage() {
                             sizes="(min-width: 768px) 50vw, 100vw"
                             className="object-cover transition-transform duration-[1600ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.02]"
                           />
-                        )}
+                        ) : null}
                         <div aria-hidden className="absolute inset-0 ring-1 ring-inset ring-[var(--color-ink)]/10" />
                       </figure>
 

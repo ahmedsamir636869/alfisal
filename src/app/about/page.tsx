@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { createClient } from "@/utils/supabase/server";
 import { cookies } from "next/headers";
-import { getContentServer, getImagesServer } from "@/lib/cms";
+import { getContentServer, getImagesServer, getVideosServer } from "@/lib/cms";
 import { getLocale } from "@/lib/i18n.server";
 import { responsiveFs } from "@/lib/responsive-fs";
 import Image from "next/image";
@@ -25,9 +25,10 @@ export const revalidate = 0;
 export default async function AboutPage() {
   const [cookieStore, locale] = await Promise.all([cookies(), getLocale()]);
   const supabase = await createClient(cookieStore);
-  const [content, images] = await Promise.all([
+  const [content, images, videos] = await Promise.all([
     getContentServer(supabase, "about", locale),
     getImagesServer(supabase, "about", locale),
+    getVideosServer(supabase, "about", locale),
   ]);
 
   const stats = [
@@ -75,7 +76,16 @@ export default async function AboutPage() {
         <div className="max-w-[1440px] mx-auto px-5 sm:px-6 md:px-10 grid grid-cols-12 gap-x-4 sm:gap-x-6 md:gap-x-10 gap-y-10 sm:gap-y-16 items-start">
           <figure className="col-span-12 md:col-span-7 relative">
             <div className="relative aspect-[5/6] md:aspect-[4/5] overflow-hidden bg-[var(--color-linen)]">
-              {images.hero_image?.url && (
+              {videos.hero_image?.url ? (
+                <video
+                  src={videos.hero_image.url}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              ) : images.hero_image?.url ? (
                 <Image
                   src={images.hero_image.url}
                   alt={images.hero_image.alt || "Inside the Alfisal studio"}
@@ -83,7 +93,7 @@ export default async function AboutPage() {
                   sizes="(min-width: 768px) 55vw, 100vw"
                   className="object-cover grayscale-[25%] hover:grayscale-0 transition-[filter,transform] duration-[2000ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.02]"
                 />
-              )}
+              ) : null}
               <div aria-hidden className="absolute inset-0 ring-1 ring-inset ring-[var(--color-ink)]/10" />
             </div>
             <figcaption className="mt-4 font-mono text-[10px] tracking-[0.15em] uppercase text-[var(--color-muted)]">

@@ -47,6 +47,7 @@ export default async function ProjectsPage() {
         desc: pick(p.description, p.description_ar, locale),
         category: pick(p.category, p.category_ar, locale),
         img: { url: p.image_url, alt: title },
+        video_url: p.video_url as string | null,
       };
     }) || [];
 

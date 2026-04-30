@@ -30,6 +30,7 @@ type ProjectRow = {
   category: string | null;
   category_ar: string | null;
   image_url: string | null;
+  video_url: string | null;
 };
 
 function pickField(en: string | null, ar: string | null, locale: "en" | "ar") {
@@ -311,7 +312,16 @@ function FeatureLarge({ project, index, locale = "en" }: { project: ProjectRow; 
       className="col-span-12 grid grid-cols-12 gap-x-4 sm:gap-x-6 md:gap-x-10 items-end group"
     >
       <figure className="col-span-12 md:col-span-8 relative aspect-[4/3] sm:aspect-[16/10] overflow-hidden bg-[var(--color-linen)]">
-        {project.image_url && (
+        {project.video_url ? (
+          <video
+            src={project.video_url}
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        ) : project.image_url ? (
           <Image
             src={project.image_url}
             alt={project.title || "Project image"}
@@ -319,7 +329,7 @@ function FeatureLarge({ project, index, locale = "en" }: { project: ProjectRow; 
             sizes="(min-width: 768px) 66vw, 100vw"
             className="object-cover transition-transform duration-[1600ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03]"
           />
-        )}
+        ) : null}
         <div aria-hidden className="absolute inset-0 ring-1 ring-inset ring-[var(--color-ink)]/10" />
       </figure>
       <div className="col-span-12 md:col-span-4 md:pb-4">
@@ -356,7 +366,16 @@ function FeatureSmall({ project, index, colSpan, locale = "en" }: { project: Pro
   return (
     <Link href="/projects" className={`col-span-12 ${colSpan} group flex flex-col`}>
       <figure className="relative aspect-[3/4] sm:aspect-[4/5] overflow-hidden bg-[var(--color-linen)]">
-        {project.image_url && (
+        {project.video_url ? (
+          <video
+            src={project.video_url}
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        ) : project.image_url ? (
           <Image
             src={project.image_url}
             alt={project.title || "Project image"}
@@ -364,7 +383,7 @@ function FeatureSmall({ project, index, colSpan, locale = "en" }: { project: Pro
             sizes="(min-width: 768px) 45vw, 100vw"
             className="object-cover transition-transform duration-[1600ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03]"
           />
-        )}
+        ) : null}
         <div aria-hidden className="absolute inset-0 ring-1 ring-inset ring-[var(--color-ink)]/10" />
       </figure>
       <div className="flex items-baseline gap-3 sm:gap-4 mt-4 sm:mt-6 mb-2 sm:mb-3">
@@ -388,7 +407,16 @@ function FeatureWide({ project, index, locale = "en" }: { project: ProjectRow; i
   return (
     <Link href="/projects" className="col-span-12 grid grid-cols-12 gap-x-4 sm:gap-x-6 md:gap-x-10 items-end group">
       <figure className="col-span-12 md:col-span-12 relative aspect-[16/10] sm:aspect-[21/9] overflow-hidden bg-[var(--color-linen)]">
-        {project.image_url && (
+        {project.video_url ? (
+          <video
+            src={project.video_url}
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        ) : project.image_url ? (
           <Image
             src={project.image_url}
             alt={project.title || "Project image"}
@@ -396,7 +424,7 @@ function FeatureWide({ project, index, locale = "en" }: { project: ProjectRow; i
             sizes="100vw"
             className="object-cover transition-transform duration-[1600ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03]"
           />
-        )}
+        ) : null}
         <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-[var(--color-ink)]/60 via-[var(--color-ink)]/10 to-transparent" />
         <div className="absolute left-4 right-4 bottom-4 sm:left-6 sm:right-6 sm:bottom-6 md:left-10 md:right-10 md:bottom-10 text-[var(--color-bone)] flex flex-col md:flex-row md:items-end md:justify-between gap-3 sm:gap-4">
           <div>

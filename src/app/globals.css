@@ -94,6 +94,7 @@
   --admin-bg:           #141f2d;   /* darkest shell */
   --admin-surface:      #1e2d3e;   /* sidebar / panels */
   --admin-surface-card: #253548;   /* elevated card surface */
+  --admin-surface-hover:#2c3f55;   /* card hover state */
   --admin-text:         #ffffff;
   --admin-text-soft:    oklch(0.72 0.038 260);  /* nav labels, sub-headings */
   --admin-text-muted:   oklch(0.62 0.035 260);  /* section labels, hints */
@@ -101,7 +102,27 @@
   --admin-text-deep:    oklch(0.43 0.025 260);  /* placeholders */
   --admin-accent:       #84a3c8;   /* = --color-saffron */
   --admin-accent-dark:  #2e5c7a;   /* = --color-saffron-deep */
+  --admin-accent-glow:  rgba(132, 163, 200, 0.15);
   --admin-border:       rgba(132, 163, 200, 0.12);
+  --admin-border-hover: rgba(132, 163, 200, 0.25);
+
+  /* Semantic feedback */
+  --admin-success:      #4ade80;
+  --admin-success-bg:   rgba(74, 222, 128, 0.08);
+  --admin-warning:      #fbbf24;
+  --admin-warning-bg:   rgba(251, 191, 36, 0.08);
+  --admin-danger:       #f87171;
+  --admin-danger-bg:    rgba(248, 113, 113, 0.08);
+
+  /* Elevation (consistent shadow scale) */
+  --admin-shadow-sm:    0 1px 2px rgba(0,0,0,0.2);
+  --admin-shadow-md:    0 4px 12px rgba(0,0,0,0.25);
+  --admin-shadow-lg:    0 8px 32px rgba(0,0,0,0.35);
+
+  /* Transition tokens */
+  --admin-ease:         cubic-bezier(0.22, 1, 0.36, 1);
+  --admin-duration:     200ms;
+  --admin-duration-slow:400ms;
 }
 
 /* ── Base ────────────────────────────────────────────────────────────── */
@@ -342,4 +363,125 @@ html[dir="rtl"] .tick-row::before {
     max-width: 100vw;
     overflow-x: hidden;
   }
+}
+
+/* ── Admin CMS Utilities ─────────────────────────────────────────────── */
+
+/* Focus rings — visible keyboard focus (a11y: CRITICAL priority §1) */
+.admin-focus:focus-visible {
+  outline: 2px solid var(--admin-accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Card hover micro-interaction (style §4, animation §7) */
+.admin-card {
+  background: var(--admin-surface-card);
+  border: 1px solid var(--admin-border);
+  transition:
+    border-color var(--admin-duration) var(--admin-ease),
+    box-shadow var(--admin-duration) var(--admin-ease),
+    transform var(--admin-duration) var(--admin-ease);
+}
+@media (hover: hover) {
+  .admin-card:hover {
+    border-color: var(--admin-border-hover);
+    box-shadow: var(--admin-shadow-md);
+    transform: translateY(-1px);
+  }
+}
+
+/* Admin scrollbar (subtle, dark theme) */
+[dir="ltr"] .admin-scroll::-webkit-scrollbar { width: 6px; }
+[dir="ltr"] .admin-scroll::-webkit-scrollbar-track { background: transparent; }
+[dir="ltr"] .admin-scroll::-webkit-scrollbar-thumb {
+  background: rgba(132, 163, 200, 0.18);
+  border-radius: 99px;
+}
+[dir="ltr"] .admin-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(132, 163, 200, 0.35);
+}
+
+/* Nav item active indicator animation */
+.admin-nav-indicator {
+  position: relative;
+}
+.admin-nav-indicator::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%) scaleY(0);
+  width: 3px;
+  height: 60%;
+  background: var(--admin-accent);
+  border-radius: 0 2px 2px 0;
+  transition: transform var(--admin-duration-slow) var(--admin-ease);
+}
+.admin-nav-indicator.active::after {
+  transform: translateY(-50%) scaleY(1);
+}
+
+/* Toast entrance */
+@keyframes admin-toast-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes admin-toast-out {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to   { opacity: 0; transform: translateY(-8px) scale(0.96); }
+}
+.admin-toast-enter { animation: admin-toast-in 300ms var(--admin-ease) forwards; }
+.admin-toast-exit  { animation: admin-toast-out 200ms ease-in forwards; }
+
+/* Skeleton shimmer for loading states (perf §3) */
+@keyframes admin-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.admin-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--admin-surface-card) 25%,
+    var(--admin-surface-hover) 50%,
+    var(--admin-surface-card) 75%
+  );
+  background-size: 200% 100%;
+  animation: admin-shimmer 1.5s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+/* Mobile sidebar overlay */
+@media (max-width: 1023px) {
+  .admin-sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 40;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--admin-duration-slow) var(--admin-ease);
+  }
+  .admin-sidebar-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+/* Stat counter pulse on the overview */
+@keyframes admin-count-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.7; }
+}
+.admin-stat-updating {
+  animation: admin-count-pulse 1s ease-in-out infinite;
+}
+
+/* Smooth page transition */
+@keyframes admin-page-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.admin-page-enter {
+  animation: admin-page-enter 400ms var(--admin-ease) forwards;
 }

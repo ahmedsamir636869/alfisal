@@ -16,8 +16,14 @@ export default function AdminLayout({
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+
+  // Close sidebar on route change (mobile)
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     checkAuth();
@@ -31,15 +37,12 @@ export default function AdminLayout({
         error,
       } = await supabase.auth.getUser();
       if (error || !user) {
-        // Clear any stale session cookies so the next login starts clean.
         await supabase.auth.signOut({ scope: "local" });
         setIsAuthenticated(false);
       } else {
         setIsAuthenticated(true);
       }
     } catch {
-      // AuthApiError — refresh token invalid / not found.
-      // Wipe the broken session silently so the login form appears.
       try { await supabase.auth.signOut({ scope: "local" }); } catch { /* noop */ }
       setIsAuthenticated(false);
     } finally {
@@ -73,11 +76,15 @@ export default function AdminLayout({
     setIsAuthenticated(false);
   }
 
+  /* ── Loading state ───────────────────────────────────────────────── */
   if (loading) {
     return (
       <div dir="ltr" className="min-h-screen bg-[var(--admin-bg)] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-9 h-9 border-[1.5px] border-[var(--admin-accent)] border-t-transparent rounded-full animate-spin" />
+        <div className="flex flex-col items-center gap-5">
+          <div className="relative w-10 h-10">
+            <div className="absolute inset-0 border-2 border-[var(--admin-accent)]/20 rounded-full" />
+            <div className="absolute inset-0 border-2 border-[var(--admin-accent)] border-t-transparent rounded-full animate-spin" />
+          </div>
           <span className="text-[var(--admin-text-muted)] text-[10px] tracking-[0.3em] uppercase font-mono">
             Loading control room
           </span>
@@ -86,9 +93,11 @@ export default function AdminLayout({
     );
   }
 
+  /* ── Login screen ────────────────────────────────────────────────── */
   if (!isAuthenticated) {
     return (
       <div dir="ltr" className="min-h-screen bg-[var(--admin-bg)] flex items-center justify-center p-6 relative overflow-hidden">
+        {/* Background grid */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 opacity-[0.04]"
@@ -98,13 +107,24 @@ export default function AdminLayout({
             backgroundSize: "64px 64px",
           }}
         />
-        <div className="w-full max-w-md relative">
+
+        {/* Subtle radial glow behind form */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-20"
+          style={{ background: "radial-gradient(circle, var(--admin-accent) 0%, transparent 70%)" }}
+        />
+
+        <div className="w-full max-w-md relative admin-page-enter">
           <div className="flex items-center justify-between mb-8 text-[10px] tracking-[0.3em] uppercase font-mono text-[var(--admin-text-muted)]">
             <span>Alfisal</span>
-            <span>Control room</span>
+            <span className="flex items-center gap-2">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--admin-accent)] animate-pulse" />
+              Control room
+            </span>
           </div>
 
-          <div className="bg-[var(--admin-surface)] border border-[var(--admin-border)] p-10">
+          <div className="bg-[var(--admin-surface)] border border-[var(--admin-border)] p-8 sm:p-10" style={{ boxShadow: "var(--admin-shadow-lg)" }}>
             <div className="mb-10">
               <div className="text-[10px] tracking-[0.3em] uppercase font-mono text-[var(--admin-accent)] mb-6">
                 01 — Restricted access
@@ -118,54 +138,59 @@ export default function AdminLayout({
               </p>
             </div>
 
-            <form onSubmit={handleLogin} className="space-y-5">
+            <form onSubmit={handleLogin} className="space-y-6">
               <div>
-                <label className="block text-[10px] font-mono text-[var(--admin-text-muted)] uppercase tracking-[0.3em] mb-2">
+                <label htmlFor="admin-email" className="block text-[10px] font-mono text-[var(--admin-text-muted)] uppercase tracking-[0.3em] mb-2">
                   Email
                 </label>
                 <input
+                  id="admin-email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full px-0 py-3 bg-transparent border-b border-white/15 text-white placeholder-[var(--admin-text-dim)] focus:outline-none focus:border-[var(--admin-accent)] transition-colors"
+                  autoComplete="email"
+                  className="admin-focus w-full px-0 py-3 bg-transparent border-b border-white/15 text-white placeholder-[var(--admin-text-dim)] focus:outline-none focus:border-[var(--admin-accent)] transition-colors min-h-[44px]"
                   placeholder="editor@alfisalcon.com"
                 />
               </div>
               <div>
-                <label className="block text-[10px] font-mono text-[var(--admin-text-muted)] uppercase tracking-[0.3em] mb-2">
+                <label htmlFor="admin-password" className="block text-[10px] font-mono text-[var(--admin-text-muted)] uppercase tracking-[0.3em] mb-2">
                   Password
                 </label>
                 <input
+                  id="admin-password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full px-0 py-3 bg-transparent border-b border-white/15 text-white placeholder-[var(--admin-text-dim)] focus:outline-none focus:border-[var(--admin-accent)] transition-colors"
+                  autoComplete="current-password"
+                  className="admin-focus w-full px-0 py-3 bg-transparent border-b border-white/15 text-white placeholder-[var(--admin-text-dim)] focus:outline-none focus:border-[var(--admin-accent)] transition-colors min-h-[44px]"
                   placeholder="••••••••"
                 />
               </div>
 
               {loginError && (
-                <div className="border-l-2 border-[var(--color-danger)] pl-4 py-1 text-[var(--color-danger)] text-sm">
-                  {loginError}
+                <div role="alert" className="flex items-start gap-3 bg-[var(--admin-danger-bg)] border border-[var(--admin-danger)]/20 px-4 py-3 text-[var(--admin-danger)] text-sm rounded-sm">
+                  <span className="material-symbols-outlined text-[18px] mt-0.5 shrink-0">error</span>
+                  <span>{loginError}</span>
                 </div>
               )}
 
               <button
                 type="submit"
                 disabled={loginLoading}
-                className="group mt-4 w-full inline-flex items-center justify-between gap-3 bg-[var(--admin-accent)] text-[var(--admin-bg)] py-4 px-5 text-[11px] uppercase tracking-[0.25em] font-mono hover:bg-[var(--admin-accent-dark)] hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="admin-focus group mt-2 w-full inline-flex items-center justify-between gap-3 bg-[var(--admin-accent)] text-[var(--admin-bg)] py-4 px-5 text-[11px] uppercase tracking-[0.25em] font-mono hover:bg-[var(--admin-accent-dark)] hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed min-h-[48px] active:scale-[0.98]"
               >
                 {loginLoading ? (
                   <span className="flex items-center gap-3">
-                    <div className="w-3 h-3 border-[1.5px] border-current border-t-transparent rounded-full animate-spin" />
+                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
                     Signing in…
                   </span>
                 ) : (
                   <>
                     <span>Enter the studio</span>
-                    <span className="transition-transform group-hover:translate-x-1">→</span>
+                    <span className="material-symbols-outlined text-[18px] transition-transform duration-300 group-hover:translate-x-1">arrow_forward</span>
                   </>
                 )}
               </button>
@@ -180,6 +205,7 @@ export default function AdminLayout({
     );
   }
 
+  /* ── Navigation items ─────────────────────────────────────────────── */
   const navItems = [
     { href: "/admin", label: "Overview", icon: "dashboard", code: "00" },
     { href: "/admin/navigation", label: "Navigation", icon: "menu", code: "01" },
@@ -194,36 +220,84 @@ export default function AdminLayout({
     { href: "/admin/submissions", label: "Inbox", icon: "inbox", code: "10" },
   ];
 
+  /* ── Authenticated layout ─────────────────────────────────────────── */
   return (
     <div dir="ltr" className="min-h-screen bg-[var(--admin-bg)] flex text-white selection:bg-[var(--admin-accent)]/30 selection:text-white">
+
+      {/* Mobile hamburger */}
+      <button
+        type="button"
+        onClick={() => setSidebarOpen(true)}
+        aria-label="Open navigation"
+        className="admin-focus lg:hidden fixed top-4 left-4 z-50 flex items-center justify-center w-11 h-11 bg-[var(--admin-surface)] border border-[var(--admin-border)] text-[var(--admin-text-soft)] hover:text-white transition-colors active:scale-95"
+        style={{ boxShadow: "var(--admin-shadow-md)" }}
+      >
+        <span className="material-symbols-outlined text-[22px]">menu</span>
+      </button>
+
+      {/* Mobile overlay */}
+      <div
+        className={`admin-sidebar-overlay ${sidebarOpen ? "open" : ""} lg:hidden`}
+        onClick={() => setSidebarOpen(false)}
+        aria-hidden
+      />
+
       {/* Sidebar */}
-      <aside className="w-72 bg-[var(--admin-surface)] border-r border-[var(--admin-border)] flex flex-col fixed h-full z-50 left-0">
+      <aside
+        className={`w-72 bg-[var(--admin-surface)] border-r border-[var(--admin-border)] flex flex-col fixed h-full z-50 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } lg:translate-x-0`}
+        style={{ boxShadow: sidebarOpen ? "var(--admin-shadow-lg)" : "none" }}
+      >
         <div className="px-7 pt-8 pb-6">
-          <div className="text-[10px] font-mono uppercase tracking-[0.3em] text-[var(--admin-text-muted)] mb-4">
-            Alfisal · CMS
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-[10px] font-mono uppercase tracking-[0.3em] text-[var(--admin-text-muted)] mb-3">
+                Alfisal · CMS
+              </div>
+              <h2 className="text-white text-2xl tracking-tight font-display">
+                Control room
+              </h2>
+            </div>
+
+            {/* Mobile close button */}
+            <button
+              type="button"
+              onClick={() => setSidebarOpen(false)}
+              aria-label="Close navigation"
+              className="admin-focus lg:hidden flex items-center justify-center w-9 h-9 text-[var(--admin-text-soft)] hover:text-white transition-colors"
+            >
+              <span className="material-symbols-outlined text-[20px]">close</span>
+            </button>
           </div>
-          <h2 className="text-white text-2xl tracking-tight font-display">
-            Control room
-          </h2>
         </div>
 
         <div className="mx-7 h-px bg-[var(--admin-border)]" />
 
-        <nav className="flex-1 px-4 py-6 space-y-[2px] overflow-y-auto">
+        <nav className="flex-1 px-4 py-6 space-y-[2px] overflow-y-auto admin-scroll" aria-label="CMS sections">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`group flex items-center gap-4 pl-4 pr-3 py-3 text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--admin-accent)] ${
+                className={`admin-nav-indicator admin-focus group flex items-center gap-3 pl-4 pr-3 py-3 text-sm transition-all duration-200 min-h-[44px] ${
                   isActive
-                    ? "bg-[var(--admin-accent)]/10 text-white"
+                    ? "active bg-[var(--admin-accent)]/10 text-white"
                     : "text-[var(--admin-text-soft)] hover:text-white hover:bg-white/[0.04]"
                 }`}
               >
                 <span
-                  className={`font-mono text-[10px] tracking-widest w-6 ${
+                  aria-hidden
+                  className={`material-symbols-outlined text-[18px] transition-colors duration-200 ${
+                    isActive ? "text-[var(--admin-accent)]" : "text-[var(--admin-text-dim)] group-hover:text-[var(--admin-text-soft)]"
+                  }`}
+                >
+                  {item.icon}
+                </span>
+                <span className="flex-1">{item.label}</span>
+                <span
+                  className={`font-mono text-[10px] tracking-widest transition-colors duration-200 ${
                     isActive
                       ? "text-[var(--admin-accent)]"
                       : "text-[var(--admin-text-dim)]"
@@ -231,39 +305,32 @@ export default function AdminLayout({
                 >
                   {item.code}
                 </span>
-                <span className="flex-1">{item.label}</span>
-                <span
-                  aria-hidden
-                  className={`h-px w-5 transition-all ${
-                    isActive
-                      ? "bg-[var(--admin-accent)] w-8"
-                      : "bg-white/10 group-hover:bg-white/30"
-                  }`}
-                />
               </Link>
             );
           })}
         </nav>
 
-        <div className="px-7 py-6 border-t border-[var(--admin-border)] flex items-center justify-between text-[10px] font-mono uppercase tracking-[0.25em]">
+        <div className="px-5 py-5 border-t border-[var(--admin-border)] space-y-2">
           <Link
             href="/"
-            className="flex items-center gap-2 text-[var(--admin-text-soft)] hover:text-white transition-colors"
+            target="_blank"
+            className="admin-focus flex items-center gap-3 px-3 py-2.5 text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--admin-text-soft)] hover:text-white hover:bg-white/[0.04] transition-colors min-h-[44px] rounded-sm"
           >
-            <span aria-hidden>↗</span>
+            <span className="material-symbols-outlined text-[16px]">open_in_new</span>
             View site
           </Link>
           <button
             onClick={handleLogout}
-            className="text-[var(--admin-text-soft)] hover:text-[var(--color-danger)] transition-colors cursor-pointer focus-visible:outline-none"
+            className="admin-focus w-full flex items-center gap-3 px-3 py-2.5 text-[11px] font-mono uppercase tracking-[0.2em] text-[var(--admin-text-soft)] hover:text-[var(--admin-danger)] hover:bg-[var(--admin-danger-bg)] transition-colors cursor-pointer min-h-[44px] rounded-sm"
           >
+            <span className="material-symbols-outlined text-[16px]">logout</span>
             Sign out
           </button>
         </div>
       </aside>
 
-      {/* Main — always LTR, offset from the left sidebar */}
-      <main className="flex-1 ml-72 p-10 md:p-14 animate-fade-in min-w-0">
+      {/* Main content — responsive offset */}
+      <main className="flex-1 lg:ml-72 p-6 pt-16 lg:pt-10 sm:p-8 md:p-10 lg:p-14 admin-page-enter min-w-0">
         {children}
       </main>
     </div>

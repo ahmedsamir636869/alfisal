@@ -328,12 +328,52 @@ export const DEFAULT_IMAGES: Record<string, Record<string, { url: string; alt: s
     service1_img: { url: "https://lh3.googleusercontent.com/aida-public/AB6AXuC_-sphk4kzMgjZa0jDOi6jQvbpH44yLaMMz6KKeh0pcndtpg-bPHDGqfvmUPunPPFyqW9_x7b52BXi2FudXCvIOyh1nYENP8aeWtQOiFK7gyCvpXt6J_JCgTgh0qL5Ew6gPAW0Fidssmcd-RpLlrKyDThO5kw9VuLbiiTk3JXokX-30JtEqaJGDA5LiXImLiIrB4AT8YhPSQHFrQJahgIoIV0NAtUCKas24lYhsyN5SOcGQix0xm_Hu-H7Ear8I8EEgsJrt3TH4C4", alt: "Structural Engineering", alt_ar: "الهندسة الإنشائية", label: "Service 1 Image" },
     service2_img: { url: "https://lh3.googleusercontent.com/aida-public/AB6AXuAJc3LFGDv3qCmpnTMhWPm7pV2nr0osDwAuR9JmC9d86rlamnEFZlAOHnFZI_ZtnXsb5hs-V81JAHqPiv8O2C0JjNXZEn4bmH1ZATJPxhd4PgWZxs7cNiGzqtCM6kxEE1q-ITiKM_VUsZ81y1cFK4zfZ-FdQy9n0tI-ydln7-wAeEzDQw3QLHiNCQnhcUks6OkJOxsMDGA1NzbF8aXkZMWw9xa0CYapew-0XRNszwBxJzrycRIwvQggP122nw65ssho52sC-5N27WU", alt: "Commercial Construction", alt_ar: "البناء التجاري", label: "Service 2 Image" },
     service3_img: { url: "https://lh3.googleusercontent.com/aida-public/AB6AXuBfVKHOf6vlZNixVFR-XfXt-cL-xy2roO8oGEEQQnya6fytmSFGKE8kTDTgVKMD_O4XSoko3GUVWr3lTFGT25oPDv_SJN-EdPGof2LlXFNa_BdH90va1fnRgK6BDRPbpKAZgIuu4-l1jGybALtjrUpER0qWayZgXz-6j4EyTgafORl-xwuLjffbLhaMJe_42kHNCKfwDNu8n0zRR25LPmr5o_jG26Dq2CdCXUWjNllWAjkbFT3vjHcVQ2B3vKGu-vOlT3vl_o-_1uk", alt: "Sustainable Infrastructure", alt_ar: "البنية التحتية المستدامة", label: "Service 3 Image" }
-  }
+  },
+  values: {
+    media_1: { url: "", alt: "Principles section media", alt_ar: "وسائط قسم المبادئ", label: "Principles Media" },
+  },
+  cta_banner: {
+    media_1: { url: "", alt: "CTA banner media", alt_ar: "وسائط إعلان الدعوة", label: "CTA Banner Media" },
+  },
+  contact: {
+    media_1: { url: "", alt: "Contact page media", alt_ar: "وسائط صفحة الاتصال", label: "Contact Page Media" },
+  },
+  footer: {
+    media_1: { url: "", alt: "Footer media", alt_ar: "وسائط التذييل", label: "Footer Media" },
+  },
 };
 
 export const DEFAULT_VIDEOS: Record<string, Record<string, { url: string; alt: string; alt_ar?: string; label: string }>> = {
   hero: {
     after_video: { url: "", alt: "After — Completed project", alt_ar: "بعد — المشروع المكتمل", label: "Slider — After Video" },
+  },
+  featured_projects: {
+    project1_image: { url: "", alt: "Project 1 video", alt_ar: "فيديو المشروع ١", label: "Project 1 Video" },
+    project2_image: { url: "", alt: "Project 2 video", alt_ar: "فيديو المشروع ٢", label: "Project 2 Video" },
+    project3_image: { url: "", alt: "Project 3 video", alt_ar: "فيديو المشروع ٣", label: "Project 3 Video" },
+  },
+  navigation: {
+    logo: { url: "", alt: "Animated logo", alt_ar: "شعار متحرك", label: "Animated Logo" },
+  },
+  about: {
+    hero_image: { url: "", alt: "About hero video", alt_ar: "فيديو قسم الاستوديو", label: "About Hero Video" },
+  },
+  services: {
+    service1_img: { url: "", alt: "Service 1 video", alt_ar: "فيديو الخدمة ١", label: "Service 1 Video" },
+    service2_img: { url: "", alt: "Service 2 video", alt_ar: "فيديو الخدمة ٢", label: "Service 2 Video" },
+    service3_img: { url: "", alt: "Service 3 video", alt_ar: "فيديو الخدمة ٣", label: "Service 3 Video" },
+  },
+  values: {
+    media_1: { url: "", alt: "Principles section video", alt_ar: "فيديو قسم المبادئ", label: "Principles Video" },
+  },
+  cta_banner: {
+    media_1: { url: "", alt: "CTA banner video", alt_ar: "فيديو إعلان الدعوة", label: "CTA Banner Video" },
+  },
+  contact: {
+    media_1: { url: "", alt: "Contact page video", alt_ar: "فيديو صفحة الاتصال", label: "Contact Page Video" },
+  },
+  footer: {
+    media_1: { url: "", alt: "Footer video", alt_ar: "فيديو التذييل", label: "Footer Video" },
   },
 };
 

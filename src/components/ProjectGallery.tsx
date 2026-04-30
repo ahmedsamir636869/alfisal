@@ -11,6 +11,7 @@ interface Project {
   desc: string | null;
   category: string | null;
   img: { url: string | null; alt: string | null };
+  video_url?: string | null;
 }
 
 interface ProjectGalleryProps {
@@ -162,7 +163,16 @@ export default function ProjectGallery({ projects, locale = "en" }: ProjectGalle
                       reverse ? "md:order-2" : ""
                     }`}
                   >
-                    {project.img?.url && (
+                    {project.video_url ? (
+                      <video
+                        src={project.video_url}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        className="absolute inset-0 w-full h-full object-cover"
+                      />
+                    ) : project.img?.url ? (
                       <Image
                         src={project.img.url}
                         alt={project.img.alt || project.title || "Project"}
@@ -170,7 +180,7 @@ export default function ProjectGallery({ projects, locale = "en" }: ProjectGalle
                         sizes="(min-width: 768px) 66vw, 100vw"
                         className="object-cover transition-transform duration-[1800ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.03]"
                       />
-                    )}
+                    ) : null}
                     <div aria-hidden className="absolute inset-0 ring-1 ring-inset ring-[var(--color-ink)]/10" />
                     {project.category && (
                       <span className="absolute top-3 left-3 sm:top-5 sm:left-5 bg-[var(--color-bone)] text-[var(--color-ink)] px-2.5 sm:px-3 py-1 sm:py-1.5 font-mono text-[9px] sm:text-[10px] tracking-[0.18em] uppercase">
@@ -217,7 +227,16 @@ export default function ProjectGallery({ projects, locale = "en" }: ProjectGalle
             {filtered.map((project, index) => (
               <article key={`${project.title}-${index}`} className="cv-auto group animate-fade-in-up">
                 <figure className="relative aspect-[3/4] sm:aspect-[4/5] overflow-hidden bg-[var(--color-linen)] mb-4 sm:mb-5">
-                  {project.img?.url && (
+                  {project.video_url ? (
+                    <video
+                      src={project.video_url}
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                  ) : project.img?.url ? (
                     <Image
                       src={project.img.url}
                       alt={project.img.alt || project.title || "Project"}
@@ -225,7 +244,7 @@ export default function ProjectGallery({ projects, locale = "en" }: ProjectGalle
                       sizes="(min-width: 1024px) 32vw, (min-width: 640px) 48vw, 100vw"
                       className="object-cover transition-transform duration-[1600ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.03]"
                     />
-                  )}
+                  ) : null}
                   <div aria-hidden className="absolute inset-0 ring-1 ring-inset ring-[var(--color-ink)]/10" />
                 </figure>
 
